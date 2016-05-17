@@ -11,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,10 +28,14 @@ public class Conexao {
     
     private static Connection conexao;
     
-    public static Connection criarConexao() throws ClassNotFoundException, SQLException {
-        if(conexao == null || conexao.isClosed()) {
-            Class.forName(DRIVER);            
-            conexao = DriverManager.getConnection(URL, USER, PASSWORD);
+    public static Connection criarConexao() {
+        try {
+            if(conexao == null || conexao.isClosed()) {
+                Class.forName(DRIVER);
+                conexao = DriverManager.getConnection(URL, USER, PASSWORD);
+            }
+        } catch (ClassNotFoundException |SQLException ex) {
+            Logger.getLogger(Conexao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return conexao;
     }

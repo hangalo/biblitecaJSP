@@ -21,6 +21,22 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- MySQL  -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.38</version>
+        </dependency>
+        
+        <!-- Jasper Report-->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>4.7.1</version>
+        </dependency>
+
+        
     </dependencies>
 
     <build>

@@ -21,11 +21,9 @@
         <script src="js/bootstrap.min.js"></script>
         <!-- Inclui todos os plugins compilados (abaixo), 
         ou inclua ficheiros separadados se necessário -->
-
-
     </head>
     <body>       
-        <h4 class="centrar">Novo Autor</h4>
+        <h4 class="centrar">Registar novo autor</h4>
         <div class="container">
             <form class="form-horizontal" role="form">
 

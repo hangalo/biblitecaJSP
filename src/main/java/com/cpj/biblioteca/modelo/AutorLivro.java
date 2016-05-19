@@ -13,33 +13,23 @@ import java.util.Objects;
  * @author toshiba
  */
 public class AutorLivro {
-    private Autor autor;
-    private Livro livro;
+    private AutorLivroCodigo codigo;
     private int ano;
 
     public AutorLivro() {
     }
 
-    public AutorLivro(Autor autor, Livro livro, int ano) {
-        this.autor = autor;
-        this.livro = livro;
+    public AutorLivro(AutorLivroCodigo codigo, int ano) {
+        this.codigo = codigo;
         this.ano = ano;
     }
 
-    public Autor getAutor() {
-        return autor;
+    public AutorLivroCodigo getCodigo() {
+        return codigo;
     }
 
-    public void setAutor(Autor autor) {
-        this.autor = autor;
-    }
-
-    public Livro getLivro() {
-        return livro;
-    }
-
-    public void setLivro(Livro livro) {
-        this.livro = livro;
+    public void setCodigo(AutorLivroCodigo codigo) {
+        this.codigo = codigo;
     }
 
     public int getAno() {
@@ -52,9 +42,8 @@ public class AutorLivro {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 97 * hash + Objects.hashCode(this.autor);
-        hash = 97 * hash + Objects.hashCode(this.livro);
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.codigo);
         return hash;
     }
 
@@ -67,10 +56,7 @@ public class AutorLivro {
             return false;
         }
         final AutorLivro other = (AutorLivro) obj;
-        if (!Objects.equals(this.autor, other.autor)) {
-            return false;
-        }
-        return Objects.equals(this.livro, other.livro);
+        return Objects.equals(this.codigo, other.codigo);
     }
-       
+    
 }

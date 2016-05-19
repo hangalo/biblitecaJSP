@@ -9,8 +9,6 @@ import com.cpj.biblioteca.conexao.Conexao;
 import com.cpj.biblioteca.modelo.Categoria;
 import com.cpj.biblioteca.modelo.CategoriaLivro;
 import com.cpj.biblioteca.modelo.CategoriaLivroCodigo;
-import com.cpj.biblioteca.modelo.Editora;
-import com.cpj.biblioteca.modelo.Lingua;
 import com.cpj.biblioteca.modelo.Livro;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -132,11 +130,11 @@ public class CategoriaLivroDAO implements DAO<CategoriaLivro> {
         return aplicarFiltro(0L, 0L, false);
     }
 
-    public List<CategoriaLivro> filtar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
+    public List<CategoriaLivro> filtrar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
         return aplicarFiltro(linhaInicial, totalDeLinhas, true);
     }
 
-    public List<CategoriaLivro> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    private List<CategoriaLivro> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * FROM livro_categoria, categoria, livro "
@@ -181,15 +179,15 @@ public class CategoriaLivroDAO implements DAO<CategoriaLivro> {
         }
     }
     
-    public List<Livro> filtarLivrosPeloCodigoDaCategoria(Long codigoCategoria, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
+    public List<Livro> filtrarLivrosPeloCodigoDaCategoria(Long codigoCategoria, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
         return aplicarFiltroPorCategoria(codigoCategoria, linhaInicial, totalDeLinhas, true);
     }
     
-    public List<Livro> filtarLivrosPeloCodigoDaCategoria(Categoria categoria, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
+    public List<Livro> filtrarLivrosPeloCodigoDaCategoria(Categoria categoria, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
         return aplicarFiltroPorCategoria(categoria.getCodigo(), linhaInicial, totalDeLinhas, true);
     }
     
-    public List<Livro> aplicarFiltroPorCategoria(Long codigoCategoria, Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    private List<Livro> aplicarFiltroPorCategoria(Long codigoCategoria, Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT livro.* FROM livro_categoria, livro "
@@ -228,11 +226,11 @@ public class CategoriaLivroDAO implements DAO<CategoriaLivro> {
         }
     }
     
-    public Livro filtarCategoriasDoLivro(Livro livro, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
+    public Livro filtrarCategoriasDoLivro(Livro livro, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
         return aplicarFiltroPorLivro(livro, linhaInicial, totalDeLinhas, true);
     }
     
-    public Livro aplicarFiltroPorLivro(Livro livro, Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    private Livro aplicarFiltroPorLivro(Livro livro, Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT categoria.* FROM livro_categoria, categoria "

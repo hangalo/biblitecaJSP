@@ -108,7 +108,7 @@ public class EditoraDAO implements DAO<Editora>{
         return aplicarFiltro(linhaInicial, totalDeLinhas, true);
     }
     
-    public List<Editora> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    private List<Editora> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT e.*, m.* FROM editora e, municipio m where e.id_municipio = m.id_municipio";

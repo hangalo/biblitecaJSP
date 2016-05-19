@@ -29,6 +29,7 @@ public class Livro implements Serializable {
     private Editora editora;
     private List<Emprestimo> emprestimos;
     private List<Categoria> categorias;
+    private List<Autor> autores;
     
     public Long getCodigo() {
         return codigo;
@@ -140,6 +141,18 @@ public class Livro implements Serializable {
 
     public void addCategoria(Categoria categoria) {
         this.categorias.add(categoria);
+    }
+
+    public List<Autor> getAutores() {
+        return autores;
+    }
+
+    public void setAutores(List<Autor> autores) {
+        this.autores = autores;
+    }
+
+    public void addAutor(Autor autor) {
+        this.autores.add(autor);
     }
 
     

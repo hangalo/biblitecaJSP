@@ -120,11 +120,11 @@ public class LeitorDAO implements DAO<Leitor> {
         return aplicarFiltro(0L, 0L, false);
     }
 
-    public List<Leitor> filtar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
+    public List<Leitor> filtrar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
         return aplicarFiltro(linhaInicial, totalDeLinhas, true);
     }
 
-    public List<Leitor> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    private List<Leitor> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * FROM leitor ";

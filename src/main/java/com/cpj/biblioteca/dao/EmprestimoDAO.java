@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.cpj.biblioteca.dao;
 
 import com.cpj.biblioteca.conexao.Conexao;
@@ -25,11 +24,11 @@ import java.util.List;
  *
  * @author toshiba
  */
-public class EmprestimoDAO implements DAO<Emprestimo>{
-    
+public class EmprestimoDAO implements DAO<Emprestimo> {
+
     private PreparedStatement prepareStatement;
     private ResultSet resultSet;
-    //id_livro, id_leitor, data_emprestimo, data_devolucao, observacoes
+
     @Override
     public boolean salvar(Emprestimo emprestimo) throws ClassNotFoundException, SQLException {
         try {
@@ -67,7 +66,7 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
 
     @Override
     public boolean excluir(Emprestimo emprestimo) throws ClassNotFoundException, SQLException {
-        try {//id_livro, id_leitor, data_emprestimo, data_devolucao, observacoes
+        try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM emprestimo WHERE id_livro = ? AND id_leitor = ? AND data_emprestimo = ?";
             prepareStatement = conexao.prepareStatement(sql);
@@ -88,17 +87,17 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
                     + "FROM emprestimo, livro, leitor "
                     + "WHERE emprestimo.id_livro = livro.id_livro AND emprestimo.id_leitor = leitor.id_leitor AND id_livro = ? AND id_leitor = ? AND data_emprestimo = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, ((EmprestimoCodigo)codigo).getLivro().getCodigo());
-            prepareStatement.setLong(2, ((EmprestimoCodigo)codigo).getLeitor().getCodigo());
-            prepareStatement.setDate(3, new Date(((EmprestimoCodigo)codigo).getDataHoraEmprestimo().getTime()));
-            
+            prepareStatement.setLong(1, ((EmprestimoCodigo) codigo).getLivro().getCodigo());
+            prepareStatement.setLong(2, ((EmprestimoCodigo) codigo).getLeitor().getCodigo());
+            prepareStatement.setDate(3, new Date(((EmprestimoCodigo) codigo).getDataHoraEmprestimo().getTime()));
+
             resultSet = prepareStatement.executeQuery();
             Emprestimo emprestimo = new Emprestimo();
-            
-            if (resultSet.next()) {                
+
+            if (resultSet.next()) {
                 Livro livro = new Livro();
                 Leitor leitor = new Leitor();
-                
+
                 livro.setCodigo(resultSet.getLong("livro.id_livro"));
                 livro.setTitulo(resultSet.getString("livro.titulo"));
                 livro.setIsbn(resultSet.getString("livro.isbn"));
@@ -108,7 +107,7 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
                 livro.setSessao(resultSet.getString("livro.sessao"));
                 livro.setEstante(resultSet.getInt("livro.estante"));
                 livro.setPosicao(resultSet.getInt("livro.posicao"));
-                
+
                 leitor.setCodigo(resultSet.getLong("leitor.id_leitor"));
                 leitor.setNome(resultSet.getString("leitor.nome_leitor"));
                 leitor.setSobrenome(resultSet.getString("leitor.sobrenome_leitor"));
@@ -117,12 +116,12 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
                 leitor.setBairro(resultSet.getString("leitor.bairro_leitor"));
                 leitor.setCasa(resultSet.getString("leitor.rua_leitor"));
                 leitor.setRua(resultSet.getString("leitor.casa_leitor"));
-                
+
                 emprestimo.setCodigo(new EmprestimoCodigo(leitor, livro, resultSet.getDate("data_emprestimo")));
                 emprestimo.setDataHoraDevolucao(resultSet.getDate("data_devolucao"));
                 emprestimo.setObservacao(resultSet.getString("observacoes"));
             }
-            
+
             return emprestimo;
         } finally {
             Conexao.fecharTudo(prepareStatement, resultSet);
@@ -134,11 +133,11 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
         return aplicarFiltro(0L, 0L, false);
     }
 
-    public List<Emprestimo> filtar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
+    public List<Emprestimo> filtrar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
         return aplicarFiltro(linhaInicial, totalDeLinhas, true);
     }
 
-    public List<Emprestimo> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    private List<Emprestimo> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * "
@@ -161,7 +160,7 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
                 Emprestimo emprestimo = new Emprestimo();
                 Livro livro = new Livro();
                 Leitor leitor = new Leitor();
-                
+
                 livro.setCodigo(resultSet.getLong("livro.id_livro"));
                 livro.setTitulo(resultSet.getString("livro.titulo"));
                 livro.setIsbn(resultSet.getString("livro.isbn"));
@@ -171,7 +170,7 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
                 livro.setSessao(resultSet.getString("livro.sessao"));
                 livro.setEstante(resultSet.getInt("livro.estante"));
                 livro.setPosicao(resultSet.getInt("livro.posicao"));
-                
+
                 leitor.setCodigo(resultSet.getLong("leitor.id_leitor"));
                 leitor.setNome(resultSet.getString("leitor.nome_leitor"));
                 leitor.setSobrenome(resultSet.getString("leitor.sobrenome_leitor"));
@@ -180,11 +179,11 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
                 leitor.setBairro(resultSet.getString("leitor.bairro_leitor"));
                 leitor.setCasa(resultSet.getString("leitor.rua_leitor"));
                 leitor.setRua(resultSet.getString("leitor.casa_leitor"));
-                
+
                 emprestimo.setCodigo(new EmprestimoCodigo(leitor, livro, resultSet.getDate("data_emprestimo")));
                 emprestimo.setDataHoraDevolucao(resultSet.getDate("data_devolucao"));
                 emprestimo.setObservacao(resultSet.getString("observacoes"));
-                
+
                 emprestimos.add(emprestimo);
             }
             return emprestimos;
@@ -192,5 +191,43 @@ public class EmprestimoDAO implements DAO<Emprestimo>{
             Conexao.fecharTudo(prepareStatement, resultSet);
         }
     }
-    
+
+    public List<Livro> filtrarOsDezLivrosMaisProcurados() throws ClassNotFoundException, SQLException {
+        return aplicarFiltroDosDezLivrosMaisProcurados();
+    }
+
+    public List<Livro> aplicarFiltroDosDezLivrosMaisProcurados() throws ClassNotFoundException, SQLException {
+        try {
+            Connection conexao = Conexao.criarConexao();
+            String sql = "SELECT livro.* "
+                    + "FROM emprestimo, livro "
+                    + "WHERE emprestimo.id_livro = livro.id_livro "
+                    + "LIMIT 10";
+
+            prepareStatement = conexao.prepareStatement(sql);
+
+            resultSet = prepareStatement.executeQuery();
+
+            List<Livro> livros = new ArrayList<>();
+            while (resultSet.next()) {
+                Livro livro = new Livro();
+
+                livro.setCodigo(resultSet.getLong("livro.id_livro"));
+                livro.setTitulo(resultSet.getString("livro.titulo"));
+                livro.setIsbn(resultSet.getString("livro.isbn"));
+                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
+                livro.setEdicao(resultSet.getString("livro.edicao"));
+                livro.setResumo(resultSet.getString("livro.resumo"));
+                livro.setSessao(resultSet.getString("livro.sessao"));
+                livro.setEstante(resultSet.getInt("livro.estante"));
+                livro.setPosicao(resultSet.getInt("livro.posicao"));
+
+                livros.add(livro);
+            }
+            return livros;
+        } finally {
+            Conexao.fecharTudo(prepareStatement, resultSet);
+        }
+    }
+
 }

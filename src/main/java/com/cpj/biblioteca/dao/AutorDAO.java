@@ -96,11 +96,11 @@ public class AutorDAO {
         return aplicarFiltro(0L, 0L, false);
     }
 
-    public List<Autor> filtar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
+    public List<Autor> filtrar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
         return aplicarFiltro(linhaInicial, totalDeLinhas, true);
     }
 
-    public List<Autor> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    private List<Autor> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
       
             String sql = "SELECT a.* FROM autor a";
             if (filtroActivo) {

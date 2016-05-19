@@ -7,8 +7,6 @@
 package com.cpj.biblioteca.service;
 
 /**
- * XXX -> Valor da coluna
- * YYY -> Nome da coluna
  * @author toshiba
  */
 public class MensagemDeErro {

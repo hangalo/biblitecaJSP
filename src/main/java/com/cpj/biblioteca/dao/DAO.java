@@ -13,7 +13,6 @@ import java.util.List;
 /**
  * 
  * @author toshiba
- * @param <T>
  */
 public interface DAO<T> {
     public boolean salvar(T entidade) throws ClassNotFoundException, SQLException ;

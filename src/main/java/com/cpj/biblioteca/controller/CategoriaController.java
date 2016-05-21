@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.cpj.biblioteca.controller;
 
 import com.cpj.biblioteca.modelo.Categoria;
@@ -20,7 +15,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  *
- * @author toshiba
+ * @author Chandimba
  */
 public class CategoriaController extends HttpServlet {
 
@@ -133,9 +128,9 @@ public class CategoriaController extends HttpServlet {
     public void buscarTudo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
         try {
-            List<Categoria> categoria = categoriaService.buscarTudo();
+            List<Categoria> categorias = categoriaService.buscarTudo();
 
-            sessao.setAttribute("categorias", categoria);
+            sessao.setAttribute("categorias", categorias);
         } catch (CPJException ex) {
             retorno = ex.getMessage();
             sessao.setAttribute("categoria_mensagem", retorno);

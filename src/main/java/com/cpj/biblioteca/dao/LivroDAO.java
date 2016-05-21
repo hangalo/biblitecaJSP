@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.cpj.biblioteca.dao;
 
 import com.cpj.biblioteca.conexao.Conexao;
 import com.cpj.biblioteca.modelo.Editora;
-import com.cpj.biblioteca.modelo.Leitor;
 import com.cpj.biblioteca.modelo.Lingua;
 import com.cpj.biblioteca.modelo.Livro;
 import java.io.Serializable;
@@ -21,7 +15,7 @@ import java.util.List;
 
 /**
  *
- * @author toshiba
+ * @author Chandimba
  */
 public class LivroDAO implements DAO<Livro> {
 

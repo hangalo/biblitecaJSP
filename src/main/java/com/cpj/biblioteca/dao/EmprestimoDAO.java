@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.cpj.biblioteca.dao;
 
 import com.cpj.biblioteca.conexao.Conexao;
@@ -22,7 +17,7 @@ import java.util.List;
 
 /**
  *
- * @author toshiba
+ * @author Chandimba
  */
 public class EmprestimoDAO implements DAO<Emprestimo> {
 

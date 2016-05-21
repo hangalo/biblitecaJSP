@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.cpj.biblioteca.controller;
 
 import com.cpj.biblioteca.modelo.Lingua;
@@ -21,7 +15,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  *
- * @author toshiba
+ * @author Chandimba
  */
 public class LinguaController extends HttpServlet {
     private String retorno;

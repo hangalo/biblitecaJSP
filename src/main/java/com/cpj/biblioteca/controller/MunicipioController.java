@@ -1,7 +1,9 @@
 package com.cpj.biblioteca.controller;
 
+import com.cpj.biblioteca.modelo.Municipio;
 import com.cpj.biblioteca.modelo.Provincia;
 import com.cpj.biblioteca.service.CPJException;
+import com.cpj.biblioteca.service.MunicipioService;
 import com.cpj.biblioteca.service.ProvinciaService;
 import java.io.IOException;
 import java.util.List;
@@ -17,10 +19,10 @@ import javax.servlet.http.HttpSession;
  *
  * @author Chandimba
  */
-public class ProvinciaController  extends HttpServlet {
-    
+public class MunicipioController extends HttpServlet {
+
     private String retorno;
-    private ProvinciaService provinciaService = new ProvinciaService();
+    private MunicipioService municipioService = new MunicipioService();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -61,63 +63,74 @@ public class ProvinciaController  extends HttpServlet {
     public void salvar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
         try {
-            String nomeDaCategoria = request.getParameter("provincia_nome");
+            String nomeDoMunicipio = request.getParameter("municipio_nome");
+            Long codigoDaProvincia = Long.parseLong(request.getParameter("municipio_provincia"));
+            
+            Provincia provincia = new ProvinciaService().buscarPeloCodigo(codigoDaProvincia);
+            
+            Municipio municipio = new Municipio();
+            municipio.setNome(nomeDoMunicipio);
+            municipio.setProvincia(provincia);
+            
+            retorno = municipioService.salvar(municipio);
 
-            Provincia provincia = new Provincia(nomeDaCategoria);
-
-            retorno = provinciaService.salvar(provincia);
         } catch (CPJException ex) {
             retorno = ex.getMessage();
         }
 
-        sessao.setAttribute("provincia_mensagem", retorno);
+        sessao.setAttribute("municipio_mensagem", retorno);
         response.sendRedirect("");
     }
     
     public void editar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
         try {
-            Long codigo = Long.parseLong(request.getParameter("provincia_codigo"));
-            String nomeDaCategoria = request.getParameter("provincia_nome");
+            String nomeDoMunicipio = request.getParameter("municipio_nome");
+            Long codigoDoMunicipio = Long.parseLong(request.getParameter("municipio_provincia"));
+            Long codigoDaProvincia = Long.parseLong(request.getParameter("municipio_provincia"));
             
-            Provincia provincia = new Provincia(codigo, nomeDaCategoria);
-
-            retorno = provinciaService.editar(provincia);
+            Provincia provincia = new ProvinciaService().buscarPeloCodigo(codigoDaProvincia);
+            
+            Municipio municipio = new Municipio();
+            municipio.setCodigo(codigoDoMunicipio);
+            municipio.setNome(nomeDoMunicipio);
+            municipio.setProvincia(provincia);
+            
+            retorno = municipioService.editar(municipio);
 
         } catch (CPJException ex) {
             retorno = ex.getMessage();
         }
 
-        sessao.setAttribute("provincia_mensagem", retorno);
+        sessao.setAttribute("municipio_mensagem", retorno);
         response.sendRedirect("");
     }
     
     public void excluir(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
         try {
-            Long codigo = Long.parseLong(request.getParameter("lingua_codigo"));
+            Long codigo = Long.parseLong(request.getParameter("municipio_codigo"));
             
-            retorno = provinciaService.excluir(codigo);
-
+            retorno = municipioService.excluir(codigo);
         } catch (CPJException ex) {
             retorno = ex.getMessage();
         }
 
-        sessao.setAttribute("lingua_mensagem", retorno);
+        sessao.setAttribute("municipio_mensagem", retorno);
         response.sendRedirect("");
     }
     
     public void buscarPeloCodigo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
         try {
-            Long codigo = Long.parseLong(request.getParameter("provincia_codigo"));
+            Long codigo = Long.parseLong(request.getParameter("municipio_codigo"));
             
-            Provincia provincia = provinciaService.buscarPeloCodigo(codigo);
+            Municipio municipio = municipioService.buscarPeloCodigo(codigo);
 
-            sessao.setAttribute("provincia", provincia);
+            sessao.setAttribute("municipio", municipio);
         } catch (CPJException ex) {
             retorno = ex.getMessage();
-            sessao.setAttribute("provincia_mensagem", retorno);
+            sessao.setAttribute("municipio_mensagem", retorno);
         }
 
         response.sendRedirect("");
@@ -126,14 +139,14 @@ public class ProvinciaController  extends HttpServlet {
     public void buscarTudo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
         try {
-            List<Provincia> linguas = provinciaService.buscarTudo();
+            List<Municipio> municipios = municipioService.buscarTudo();
 
-            sessao.setAttribute("provincias", linguas);
+            sessao.setAttribute("municipios", municipios);
         } catch (CPJException ex) {
             retorno = ex.getMessage();
-            sessao.setAttribute("provincia_mensagem", retorno);
+            sessao.setAttribute("municipio_mensagem", retorno);
         }
 
         response.sendRedirect("");
-    }
+    }   
 }

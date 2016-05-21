@@ -71,11 +71,16 @@ public class LeitorDAO implements DAO<Leitor> {
 
     @Override
     public boolean excluir(Leitor leitor) throws ClassNotFoundException, SQLException {
+        return excluir(leitor.getCodigo());
+    }
+
+    @Override
+    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM leitor WHERE id_leitor = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, leitor.getCodigo());
+            prepareStatement.setLong(1, (Long)codigo);
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

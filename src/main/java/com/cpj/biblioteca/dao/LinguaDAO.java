@@ -47,11 +47,16 @@ public class LinguaDAO implements DAO<Lingua> {
 
     @Override
     public boolean excluir(Lingua lingua) throws ClassNotFoundException, SQLException {
+        return excluir(lingua.getCodigo());
+    }
+
+    @Override
+    public boolean excluir(Serializable lingua) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM lingua WHERE id_lingua = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, lingua.getCodigo());
+            prepareStatement.setLong(1, (Long)lingua);
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

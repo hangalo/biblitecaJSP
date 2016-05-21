@@ -57,11 +57,15 @@ public class AutorService {
     }
     
     public String excluir(Autor autor) throws CPJException{
+        return excluir(autor.getCodigo());
+    }
+    
+    public String excluir(Long codigo) throws CPJException{
         try {
-            if(autor.getCodigo() == null) {
+            if(codigo == null) {
                 return "Nenhum autor informado. Seleccione o autor a ser excluído.";
             }
-            return autorDAO.excluir(autor)? "Autor excluído com sucesso.":"Código inexistente. Não foi possível excluír o livro informado.";
+            return autorDAO.excluir(codigo)? "Autor excluído com sucesso.":"Código inexistente. Não foi possível excluír o livro informado.";
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

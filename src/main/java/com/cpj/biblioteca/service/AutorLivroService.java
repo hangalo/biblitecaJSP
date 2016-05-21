@@ -8,6 +8,7 @@ package com.cpj.biblioteca.service;
 
 import com.cpj.biblioteca.dao.AutorLivroDAO;
 import com.cpj.biblioteca.modelo.AutorLivro;
+import com.cpj.biblioteca.modelo.AutorLivroCodigo;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -51,8 +52,12 @@ public class AutorLivroService {
     }
     
     public String excluir(AutorLivro autorLivro) throws CPJException{
+        return excluir(autorLivro.getCodigo());
+    }
+    
+    public String excluir(AutorLivroCodigo autorLivro) throws CPJException{
         try {
-            if(autorLivro.getCodigo() == null) {
+            if(autorLivro == null) {
                 return "Nenhum empréstimo informado. Seleccione o empréstimo a ser excluído.";
             }
             return emprestimoDAO.excluir(autorLivro)? "Empréstimo excluído com sucesso.":"Código inexistente. Não foi possível excluír o empréstimo informado.";

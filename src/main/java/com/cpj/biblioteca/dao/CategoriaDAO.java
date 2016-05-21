@@ -54,10 +54,20 @@ public class CategoriaDAO implements DAO<Categoria>{
     @Override
     public boolean excluir(Categoria categoria) throws ClassNotFoundException, SQLException {
         try {
+            return excluir(categoria.getCodigo());
+        } finally {
+            Conexao.fecharTudo(prepareStatement);
+        }
+    }
+
+
+    @Override
+    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException {
+        try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM categoria WHERE id_categoria = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, categoria.getCodigo());
+            prepareStatement.setLong(1, (Long)codigo);
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

@@ -9,6 +9,7 @@ package com.cpj.biblioteca.service;
 import com.cpj.biblioteca.dao.CategoriaLivroDAO;
 import com.cpj.biblioteca.modelo.Categoria;
 import com.cpj.biblioteca.modelo.CategoriaLivro;
+import com.cpj.biblioteca.modelo.CategoriaLivroCodigo;
 import com.cpj.biblioteca.modelo.Livro;
 import java.sql.SQLException;
 import java.util.List;
@@ -53,11 +54,16 @@ public class CategoriaLivroService {
     }
     
     public String excluir(CategoriaLivro livro) throws CPJException{
+        return excluir(livro.getCodigo());
+    }
+    
+    
+    public String excluir(CategoriaLivroCodigo codigo) throws CPJException{
         try {
-            if(livro.getCodigo() == null) {
+            if(codigo == null) {
                 return "Nenhum empréstimo informado. Seleccione o empréstimo a ser excluído.";
             }
-            return categoriaLivroDAO.excluir(livro)? "Categoria desassociada ao livro com sucesso.":"Código inexistente. Não foi possível desassociar a categoria do livro informado.";
+            return categoriaLivroDAO.excluir(codigo)? "Categoria desassociada ao livro com sucesso.":"Código inexistente. Não foi possível desassociar a categoria do livro informado.";
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

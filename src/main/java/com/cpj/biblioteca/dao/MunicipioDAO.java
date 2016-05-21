@@ -55,11 +55,16 @@ public class MunicipioDAO implements DAO<Municipio>{
 
     @Override
     public boolean excluir(Municipio municipio) throws ClassNotFoundException, SQLException {
+        return excluir(municipio.getCodigo());
+    }
+
+    @Override
+    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM municipio WHERE id_municipio = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, municipio.getCodigo());
+            prepareStatement.setLong(1, (Long)codigo);
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

@@ -61,11 +61,16 @@ public class EditoraDAO implements DAO<Editora>{
 
     @Override
     public boolean excluir(Editora editora) throws ClassNotFoundException, SQLException {
+        return excluir(editora.getCodigo());
+    }
+    
+    @Override
+    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM editora WHERE id_editora = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, editora.getCodigo());
+            prepareStatement.setLong(1, (Long)codigo);
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

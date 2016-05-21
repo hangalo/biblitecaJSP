@@ -46,11 +46,15 @@ public class LinguaService {
     }
     
     public String excluir(Lingua lingua) throws CPJException{
+        return excluir(lingua.getCodigo());
+    }
+   
+    public String excluir(Long codigo) throws CPJException{
         try {
-            if(lingua.getCodigo() == null) {
+            if(codigo == null) {
                 return "Nenhuma língua informada. Selecione a língua a ser excluída.";
             }
-            return linguaDAO.excluir(lingua)? "Língua excluida com sucesso.":"Código inexistente. Não foi possível excluír a língua informada.";
+            return linguaDAO.excluir(codigo)? "Língua excluida com sucesso.":"Código inexistente. Não foi possível excluír a língua informada.";
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

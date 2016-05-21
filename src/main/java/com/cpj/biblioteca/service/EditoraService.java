@@ -8,6 +8,7 @@ package com.cpj.biblioteca.service;
 
 import com.cpj.biblioteca.dao.EditoraDAO;
 import com.cpj.biblioteca.modelo.Editora;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -51,11 +52,16 @@ public class EditoraService {
     }
     
     public String excluir(Editora editora) throws CPJException{
+        return excluir(editora.getCodigo());
+    }
+    
+    
+    public String excluir(Long codigo) throws CPJException{
         try {
-            if(editora.getCodigo() == null) {
+            if(codigo == null) {
                 return "Nenhum município informado. Seleccione o município a ser excluído.";
             }
-            return editoraDAO.excluir(editora)? "Município excluído com sucesso.":"Código inexistente. Não foi possível excluír o município informado.";
+            return editoraDAO.excluir(codigo)? "Município excluído com sucesso.":"Código inexistente. Não foi possível excluír o município informado.";
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

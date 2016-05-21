@@ -6,13 +6,14 @@
 
 package com.cpj.biblioteca.modelo;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  *
  * @author toshiba
  */
-public class CategoriaLivroCodigo {
+public class CategoriaLivroCodigo implements Serializable{
     private Livro livro;
     private Categoria categoria;
 

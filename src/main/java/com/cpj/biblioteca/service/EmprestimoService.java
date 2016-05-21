@@ -8,6 +8,7 @@ package com.cpj.biblioteca.service;
 
 import com.cpj.biblioteca.dao.EmprestimoDAO;
 import com.cpj.biblioteca.modelo.Emprestimo;
+import com.cpj.biblioteca.modelo.EmprestimoCodigo;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -34,15 +35,15 @@ public class EmprestimoService {
         }
     }
     
-    public String editar(Emprestimo livro) throws CPJException{
+    public String editar(Emprestimo emprestimo) throws CPJException{
         try {
-            if(livro.getCodigo().getLivro() == null) {
+            if(emprestimo.getCodigo().getLivro() == null) {
                 return "Seleccione o livro";
             }
-            if(livro.getCodigo().getLeitor() == null) {
+            if(emprestimo.getCodigo().getLeitor() == null) {
                 return "Seleccione o leitor";
             }
-            return emprestimoDAO.editar(livro)? "Empréstimo editado com sucesso.":"Não foi possível salvar a edição feita. Consulte o administrador do sistema para mais informações.";
+            return emprestimoDAO.editar(emprestimo)? "Empréstimo editado com sucesso.":"Não foi possível salvar a edição feita. Consulte o administrador do sistema para mais informações.";
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {
@@ -50,12 +51,17 @@ public class EmprestimoService {
         }
     }
     
-    public String excluir(Emprestimo livro) throws CPJException{
+    public String excluir(Emprestimo emprestimo) throws CPJException{
+        return excluir(emprestimo.getCodigo());
+    }
+    
+    
+    public String excluir(EmprestimoCodigo codigo) throws CPJException{
         try {
-            if(livro.getCodigo() == null) {
+            if(codigo == null) {
                 return "Nenhum empréstimo informado. Seleccione o empréstimo a ser excluído.";
             }
-            return emprestimoDAO.excluir(livro)? "Empréstimo excluído com sucesso.":"Código inexistente. Não foi possível excluír o empréstimo informado.";
+            return emprestimoDAO.excluir(codigo)? "Empréstimo excluído com sucesso.":"Código inexistente. Não foi possível excluír o empréstimo informado.";
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

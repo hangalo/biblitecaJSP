@@ -53,11 +53,16 @@ public class ProvinciaDAO implements DAO<Provincia>{
 
     @Override
     public boolean excluir(Provincia provincia) throws ClassNotFoundException, SQLException {
+        return excluir(provincia.getCodigo());
+    }
+ 
+    @Override
+    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM provincia WHERE id_provincia = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, provincia.getCodigo());
+            prepareStatement.setLong(1, (Long)codigo);
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

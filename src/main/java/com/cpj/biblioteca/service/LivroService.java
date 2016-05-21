@@ -51,11 +51,15 @@ public class LivroService {
     }
     
     public String excluir(Livro livro) throws CPJException{
+        return excluir(livro.getCodigo());
+    }
+    
+    public String excluir(Long codigo) throws CPJException{
         try {
-            if(livro.getCodigo() == null) {
+            if(codigo == null) {
                 return "Nenhum livro informado. Seleccione o livro a ser excluído.";
             }
-            return livroDAO.excluir(livro)? "Livro excluído com sucesso.":"Código inexistente. Não foi possível excluír o livro informado.";
+            return livroDAO.excluir(codigo)? "Livro excluído com sucesso.":"Código inexistente. Não foi possível excluír o livro informado.";
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

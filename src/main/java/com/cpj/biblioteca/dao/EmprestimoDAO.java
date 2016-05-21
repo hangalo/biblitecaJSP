@@ -66,13 +66,18 @@ public class EmprestimoDAO implements DAO<Emprestimo> {
 
     @Override
     public boolean excluir(Emprestimo emprestimo) throws ClassNotFoundException, SQLException {
+        return excluir(emprestimo.getCodigo());
+    }
+
+    @Override
+    public boolean excluir(Serializable emprestimo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM emprestimo WHERE id_livro = ? AND id_leitor = ? AND data_emprestimo = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, emprestimo.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(2, emprestimo.getCodigo().getLeitor().getCodigo());
-            prepareStatement.setDate(3, new Date(emprestimo.getCodigo().getDataHoraEmprestimo().getTime()));
+            prepareStatement.setLong(1, ((EmprestimoCodigo)emprestimo).getLivro().getCodigo());
+            prepareStatement.setLong(2, ((EmprestimoCodigo)emprestimo).getLeitor().getCodigo());
+            prepareStatement.setDate(3, new Date(((EmprestimoCodigo)emprestimo).getDataHoraEmprestimo().getTime()));
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

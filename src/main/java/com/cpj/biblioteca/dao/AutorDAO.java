@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author toshiba
  */
-public class AutorDAO {
+public class AutorDAO implements DAO<Autor>{
 
     private ResultSet resultSet;
     Connection conexao;
@@ -30,6 +30,7 @@ public class AutorDAO {
         conexao = Conexao.criarConexao();
     }
 
+    @Override
     public boolean salvar(Autor autor) throws ClassNotFoundException, SQLException {
 
         String sql = "INSERT INTO autor(nome_autor, sobrenome_autor, data_nascimento, breve_biografica, id_municipio) VALUES (?, ?, ?, ?, ?)";
@@ -43,6 +44,7 @@ public class AutorDAO {
         return prepareStatement.executeUpdate() > 0;
     }
 
+    @Override
     public boolean editar(Autor autor) throws ClassNotFoundException, SQLException {
 
         String sql = "UPDATE autor SET nome_autor = ?, sobrenome_autor = ?, data_nascimento = ?, breve_biografica = ?, id_municipio = ? "
@@ -59,6 +61,7 @@ public class AutorDAO {
 
     }
 
+    @Override
     public boolean excluir(Autor autor) throws ClassNotFoundException, SQLException {
 
         String sql = "DELETE FROM autor WHERE id_autor = ?";
@@ -68,6 +71,17 @@ public class AutorDAO {
 
     }
 
+    @Override
+    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException {
+
+        String sql = "DELETE FROM autor WHERE id_autor = ?";
+        PreparedStatement prepareStatement = conexao.prepareStatement(sql);
+        prepareStatement.setLong(1, (Long)codigo);
+        return prepareStatement.executeUpdate() > 0;
+
+    }
+
+    @Override
     public Autor buscarPeloCodigo(Serializable codigo) throws ClassNotFoundException, SQLException {
 
         Connection conexao = Conexao.criarConexao();
@@ -92,6 +106,7 @@ public class AutorDAO {
 
     }
 
+    @Override
     public List<Autor> buscarTudo() throws ClassNotFoundException, SQLException {
         return aplicarFiltro(0L, 0L, false);
     }

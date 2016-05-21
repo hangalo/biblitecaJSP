@@ -77,11 +77,16 @@ public class LivroDAO implements DAO<Livro> {
 
     @Override
     public boolean excluir(Livro livro) throws ClassNotFoundException, SQLException {
+        return excluir(livro.getCodigo());
+    }
+
+    @Override
+    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM livro WHERE id_livro = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, livro.getCodigo());
+            prepareStatement.setLong(1, (Long)codigo);
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

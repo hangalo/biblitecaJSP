@@ -52,11 +52,15 @@ public class MunicipioService {
     }
     
     public String excluir(Municipio municipio) throws CPJException{
+        return excluir(municipio.getCodigo());
+    }
+    
+    public String excluir(Long codigo) throws CPJException{
         try {
-            if(municipio.getCodigo() == null) {
+            if(codigo == null) {
                 return "Nenhum município informado. Seleccione o município a ser excluído.";
             }
-            return municipioDAO.excluir(municipio)? "Município excluído com sucesso.":"Código inexistente. Não foi possível excluír o município informado.";
+            return municipioDAO.excluir(codigo)? "Município excluído com sucesso.":"Código inexistente. Não foi possível excluír o município informado.";
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

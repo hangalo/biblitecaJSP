@@ -59,12 +59,17 @@ public class AutorLivroDAO implements DAO<AutorLivro>{
 
     @Override
     public boolean excluir(AutorLivro autorLivro) throws ClassNotFoundException, SQLException {
+        return excluir(autorLivro.getCodigo());
+    }
+
+    @Override
+    public boolean excluir(Serializable autorLivro) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM autor_livro WHERE livro_id_livro = ? AND autor_id_autor = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(2, autorLivro.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(3, autorLivro.getCodigo().getAutor().getCodigo());
+            prepareStatement.setLong(2, ((AutorLivroCodigo)autorLivro).getLivro().getCodigo());
+            prepareStatement.setLong(3, ((AutorLivroCodigo)autorLivro).getAutor().getCodigo());
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);

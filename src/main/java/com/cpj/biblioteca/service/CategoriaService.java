@@ -46,8 +46,12 @@ public class CategoriaService {
     }
     
     public String excluir(Categoria categoria) throws CPJException{
+        return excluir(categoria.getCodigo());
+    }
+    
+    public String excluir(Long categoria) throws CPJException{
         try {
-            if(categoria.getCodigo()== null) {
+            if(categoria == null) {
                 return "Nenhuma categoria informada. Selecione a categoria a ser excluída.";
             }
             return categoriaDAO.excluir(categoria)? "Categoria excluida com sucesso.":"Código inexistente. Não foi possível excluír a categoria informada.";

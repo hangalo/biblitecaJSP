@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.cpj.biblioteca.service;
 
 import com.cpj.biblioteca.dao.LivroDAO;
@@ -13,7 +7,7 @@ import java.util.List;
 
 /**
  *
- * @author toshiba
+ * @author Chandimba
  */
 public class LivroService {
     private LivroDAO livroDAO = new LivroDAO();
@@ -70,6 +64,16 @@ public class LivroService {
     public Livro buscarPeloCodigo(Long codigoLivro) throws CPJException{
         try {
             return livroDAO.buscarPeloCodigo(codigoLivro);
+        } catch (ClassNotFoundException ex) {
+            throw new CPJException("Driver do MySQL não encontrado.");
+        } catch (SQLException ex) {
+            throw new CPJException("Erro: " + ex.getMessage());
+        }
+    }
+    
+    public Livro buscarPeloISBN(String isbn) throws CPJException{
+        try {
+            return livroDAO.buscarPeloISBN(isbn);
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

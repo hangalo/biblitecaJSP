@@ -80,7 +80,7 @@ public class LivroDAO implements DAO<Livro> {
             Connection conexao = Conexao.criarConexao();
             String sql = "DELETE FROM livro WHERE id_livro = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, (Long)codigo);
+            prepareStatement.setLong(1, (Long) codigo);
             return prepareStatement.executeUpdate() > 0;
         } finally {
             Conexao.fecharTudo(prepareStatement);
@@ -97,36 +97,55 @@ public class LivroDAO implements DAO<Livro> {
             prepareStatement.setLong(1, (Long) codigo);
             resultSet = prepareStatement.executeQuery();
 
-            Livro livro = new Livro();
-            if (resultSet.next()) {
-                Lingua lingua = new Lingua();
-                Editora editora = new Editora();
-
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-                
-                lingua.setCodigo(resultSet.getLong("lingua.id_lingua"));
-                lingua.setCodigo(resultSet.getLong("lingua.nome_lingua"));
-                
-                editora.setCodigo(resultSet.getLong("editora.id_editora"));
-                editora.setNome(resultSet.getString("editora.nome_editora"));
-                editora.setRua(resultSet.getString("editora.rua_editora"));
-                editora.setCasa(resultSet.getString("editora.casa_editora"));
-                
-                livro.setLingua(lingua);
-                livro.setEditora(editora);
-            }
-            return livro;
+            return resultSet.next()? obterDadosDoLivro(resultSet): null;
         } finally {
             Conexao.fecharTudo(prepareStatement, resultSet);
         }
+    }
+
+    public Livro buscarPeloISBN(String isbn) throws ClassNotFoundException, SQLException {
+        try {
+            Connection conexao = Conexao.criarConexao();
+            String sql = "SELECT livro.*, lingua.*, editora.*  FROM livro, editora, lingua "
+                    + "WHERE livro.id_lingua = lingua.id_lingua AND livro.id_editora = editora.id_editora AND isbn = ?";
+            prepareStatement = conexao.prepareStatement(sql);
+            prepareStatement.setString(1, isbn);
+            resultSet = prepareStatement.executeQuery();
+            
+            return resultSet.next()? obterDadosDoLivro(resultSet): null;
+        } finally {
+            Conexao.fecharTudo(prepareStatement, resultSet);
+        }
+    }
+
+    public Livro obterDadosDoLivro(ResultSet resultSet) throws SQLException {
+        Livro livro = new Livro();
+
+        Lingua lingua = new Lingua();
+        Editora editora = new Editora();
+
+        livro.setCodigo(resultSet.getLong("livro.id_livro"));
+        livro.setTitulo(resultSet.getString("livro.titulo"));
+        livro.setIsbn(resultSet.getString("livro.isbn"));
+        livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
+        livro.setEdicao(resultSet.getString("livro.edicao"));
+        livro.setResumo(resultSet.getString("livro.resumo"));
+        livro.setSessao(resultSet.getString("livro.sessao"));
+        livro.setEstante(resultSet.getInt("livro.estante"));
+        livro.setPosicao(resultSet.getInt("livro.posicao"));
+
+        lingua.setCodigo(resultSet.getLong("lingua.id_lingua"));
+        lingua.setNome(resultSet.getString("lingua.nome_lingua"));
+
+        editora.setCodigo(resultSet.getLong("editora.id_editora"));
+        editora.setNome(resultSet.getString("editora.nome_editora"));
+        editora.setRua(resultSet.getString("editora.rua_editora"));
+        editora.setCasa(resultSet.getString("editora.casa_editora"));
+
+        livro.setLingua(lingua);
+        livro.setEditora(editora);
+        
+        return livro;
     }
 
     @Override
@@ -141,7 +160,8 @@ public class LivroDAO implements DAO<Livro> {
     private List<Livro> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT * FROM livro ";
+            String sql = "SELECT livro.*, lingua.*, editora.*  FROM livro, editora, lingua "
+                    + "WHERE livro.id_lingua = lingua.id_lingua AND livro.id_editora = editora.id_editora";
             if (filtroActivo) {
                 sql = sql + " LIMIT ?, ?";
             }
@@ -156,22 +176,12 @@ public class LivroDAO implements DAO<Livro> {
 
             List<Livro> livros = new ArrayList<>();
             while (resultSet.next()) {
-                Livro livro = new Livro();
-                livro.setCodigo(resultSet.getLong("id_livro"));
-                livro.setTitulo(resultSet.getString("titulo"));
-                livro.setIsbn(resultSet.getString("isbn"));
-                livro.setDataPublicacao(resultSet.getDate("data_publicacao"));
-                livro.setEdicao(resultSet.getString("edicao"));
-                livro.setResumo(resultSet.getString("resumo"));
-                livro.setSessao(resultSet.getString("sessao"));
-                livro.setEstante(resultSet.getInt("estante"));
-                livro.setPosicao(resultSet.getInt("posicao"));
-
-                livros.add(livro);
+                livros.add(obterDadosDoLivro(resultSet));
             }
             return livros;
         } finally {
             Conexao.fecharTudo(prepareStatement, resultSet);
         }
     }
+    
 }

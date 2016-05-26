@@ -31,18 +31,20 @@ CREATE TABLE `autor` (
   `nome_autor` varchar(45) DEFAULT NULL,
   `sobrenome_autor` varchar(45) DEFAULT NULL,
   `data_nascimento` date DEFAULT NULL,
-  `breve_biografica` varchar(400) DEFAULT NULL,
+  `breve_biografia` varchar(400) DEFAULT NULL,
   `id_municipio` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_autor`),
   KEY `fk_autor_municipio1_idx` (`id_municipio`),
   CONSTRAINT `fk_autor_municipio1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `autor`
 --
 
 /*!40000 ALTER TABLE `autor` DISABLE KEYS */;
+INSERT INTO `autor` (`id_autor`,`nome_autor`,`sobrenome_autor`,`data_nascimento`,`breve_biografia`,`id_municipio`) VALUES 
+ (1,'Agostinho','Neto','2016-03-05','Biografia',1);
 /*!40000 ALTER TABLE `autor` ENABLE KEYS */;
 
 
@@ -58,8 +60,8 @@ CREATE TABLE `autor_livro` (
   PRIMARY KEY (`livro_id_livro`,`autor_id_autor`),
   KEY `fk_autor_livro_livro1_idx` (`livro_id_livro`),
   KEY `fk_autor_livro_autor1_idx` (`autor_id_autor`),
-  CONSTRAINT `fk_autor_livro_livro1` FOREIGN KEY (`livro_id_livro`) REFERENCES `livro` (`id_livro`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_autor_livro_autor1` FOREIGN KEY (`autor_id_autor`) REFERENCES `autor` (`id_autor`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_autor_livro_autor1` FOREIGN KEY (`autor_id_autor`) REFERENCES `autor` (`id_autor`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_autor_livro_livro1` FOREIGN KEY (`livro_id_livro`) REFERENCES `livro` (`id_livro`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -97,19 +99,27 @@ DROP TABLE IF EXISTS `editora`;
 CREATE TABLE `editora` (
   `id_editora` int(11) NOT NULL AUTO_INCREMENT,
   `nome_editora` varchar(100) DEFAULT NULL,
-  `rua_editora` varchar(45) DEFAULT NULL,
   `casa_editora` varchar(45) DEFAULT NULL,
+  `rua_editora` varchar(45) DEFAULT NULL,
+  `bairro_editora` varchar(45) DEFAULT NULL,
+  `caixa_postal_editora` varchar(45) DEFAULT NULL,
+  `telefone_fixo_editora` varchar(45) DEFAULT NULL,
+  `telefone_movel_editora` varchar(45) DEFAULT NULL,
+  `email_editora` varchar(45) DEFAULT NULL,
+  `home_page_editora` varchar(45) DEFAULT NULL,
   `id_municipio` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_editora`),
   KEY `fk_editora_municipio1_idx` (`id_municipio`),
   CONSTRAINT `fk_editora_municipio1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `editora`
 --
 
 /*!40000 ALTER TABLE `editora` DISABLE KEYS */;
+INSERT INTO `editora` (`id_editora`,`nome_editora`,`casa_editora`,`rua_editora`,`bairro_editora`,`caixa_postal_editora`,`telefone_fixo_editora`,`telefone_movel_editora`,`email_editora`,`home_page_editora`,`id_municipio`) VALUES 
+ (1,'','','',NULL,'','','','','',1);
 /*!40000 ALTER TABLE `editora` ENABLE KEYS */;
 
 
@@ -127,8 +137,8 @@ CREATE TABLE `emprestimo` (
   PRIMARY KEY (`id_leitor`,`id_livro`,`data_emprestimo`),
   KEY `fk_emprestimo_livro1_idx` (`id_livro`),
   KEY `fk_emprestimo_leitor1_idx` (`id_leitor`),
-  CONSTRAINT `fk_emprestimo_livro1` FOREIGN KEY (`id_livro`) REFERENCES `livro` (`id_livro`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_emprestimo_leitor1` FOREIGN KEY (`id_leitor`) REFERENCES `leitor` (`id_leitor`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_emprestimo_leitor1` FOREIGN KEY (`id_leitor`) REFERENCES `leitor` (`id_leitor`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_emprestimo_livro1` FOREIGN KEY (`id_livro`) REFERENCES `livro` (`id_livro`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -254,13 +264,19 @@ CREATE TABLE `municipio` (
   PRIMARY KEY (`id_municipio`),
   KEY `fk_municipio_provincia1_idx` (`id_provincia`),
   CONSTRAINT `fk_municipio_provincia1` FOREIGN KEY (`id_provincia`) REFERENCES `provincia` (`id_provincia`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `municipio`
 --
 
 /*!40000 ALTER TABLE `municipio` DISABLE KEYS */;
+INSERT INTO `municipio` (`id_municipio`,`nome_municipio`,`id_provincia`) VALUES 
+ (1,'Viana',1),
+ (2,'Cacuaco',1),
+ (3,'Maianga',1),
+ (4,'Talatona',1),
+ (5,'Chibia',2);
 /*!40000 ALTER TABLE `municipio` ENABLE KEYS */;
 
 
@@ -273,13 +289,16 @@ CREATE TABLE `provincia` (
   `id_provincia` int(11) NOT NULL AUTO_INCREMENT,
   `nome_provincia` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id_provincia`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `provincia`
 --
 
 /*!40000 ALTER TABLE `provincia` DISABLE KEYS */;
+INSERT INTO `provincia` (`id_provincia`,`nome_provincia`) VALUES 
+ (1,'Luanda'),
+ (2,'Lubango');
 /*!40000 ALTER TABLE `provincia` ENABLE KEYS */;
 
 

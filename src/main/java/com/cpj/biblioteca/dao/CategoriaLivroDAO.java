@@ -87,17 +87,17 @@ public class CategoriaLivroDAO implements DAO<CategoriaLivro> {
     }
 
     @Override
-    public CategoriaLivro buscarPeloCodigo(Serializable codigo) throws ClassNotFoundException, SQLException {
+    public CategoriaLivro buscarPeloCodigo(CategoriaLivro categoriaLivro) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * FROM livro_categoria, categoria, livro "
                     + "WHERE categoria_id_categoria = id_categoria AND livro_id_livro = id_livro AND id_categoria = ? AND id_livro = ? ";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, ((CategoriaLivroCodigo) codigo).getCategoria().getCodigo());
-            prepareStatement.setLong(2, ((CategoriaLivroCodigo) codigo).getLivro().getCodigo());
+            prepareStatement.setLong(1, categoriaLivro.getCodigo().getCategoria().getCodigo());
+            prepareStatement.setLong(2, categoriaLivro.getCodigo().getLivro().getCodigo());
 
             resultSet = prepareStatement.executeQuery();
-            CategoriaLivro categoriaLivro = new CategoriaLivro();
+            
             
             if (resultSet.next()) {
                 Categoria categoria = new Categoria();

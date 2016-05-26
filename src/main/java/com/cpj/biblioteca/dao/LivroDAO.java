@@ -88,13 +88,13 @@ public class LivroDAO implements DAO<Livro> {
     }
 
     @Override
-    public Livro buscarPeloCodigo(Serializable codigo) throws ClassNotFoundException, SQLException {
+    public Livro buscarPeloCodigo(Livro livro) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT livro.*, lingua.*, editora.*  FROM livro, editora, lingua "
                     + "WHERE livro.id_lingua = lingua.id_lingua AND livro.id_editora = editora.id_editora AND id_livro = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, (Long) codigo);
+            prepareStatement.setLong(1, livro.getCodigo());
             resultSet = prepareStatement.executeQuery();
 
             return resultSet.next()? obterDadosDoLivro(resultSet): null;

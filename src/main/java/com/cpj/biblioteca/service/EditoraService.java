@@ -63,7 +63,7 @@ public class EditoraService {
         }
     }
     
-    public Editora buscarPeloCodigo(Long codigoMunicipio) throws CPJException{
+    public Editora buscarPeloCodigo(Editora codigoMunicipio) throws CPJException{
         try {
             return editoraDAO.buscarPeloCodigo(codigoMunicipio);
         } catch (ClassNotFoundException ex) {

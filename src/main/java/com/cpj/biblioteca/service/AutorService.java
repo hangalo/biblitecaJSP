@@ -67,7 +67,7 @@ public class AutorService {
         }
     }
     
-    public Autor buscarPeloCodigo(Long codigoAutor) throws CPJException{
+    public Autor buscarPeloCodigo(Autor codigoAutor) throws CPJException{
         try {
             return autorDAO.buscarPeloCodigo(codigoAutor);
         } catch (ClassNotFoundException ex) {
@@ -78,13 +78,7 @@ public class AutorService {
     }
     
     public List<Autor> buscarTudo() throws CPJException{
-        try {
-            return autorDAO.buscarTudo();
-        } catch (ClassNotFoundException ex) {
-            throw new CPJException("Driver do MySQL não encontrado.");
-        } catch (SQLException ex) {
-            throw new CPJException("Erro: " + ex.getMessage());
-        }
+        return autorDAO.buscarTudo();
     }
     
     

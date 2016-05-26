@@ -61,7 +61,7 @@ public class LivroService {
         }
     }
     
-    public Livro buscarPeloCodigo(Long codigoLivro) throws CPJException{
+    public Livro buscarPeloCodigo(Livro codigoLivro) throws CPJException{
         try {
             return livroDAO.buscarPeloCodigo(codigoLivro);
         } catch (ClassNotFoundException ex) {

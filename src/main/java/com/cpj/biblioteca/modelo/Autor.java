@@ -83,6 +83,12 @@ public class Autor implements Serializable {
         final Autor other = (Autor) obj;
         return Objects.equals(this.codigo, other.codigo);
     }
+
+    @Override
+    public String toString() {
+        return this.nome;
+    }
+    
     
     
 }

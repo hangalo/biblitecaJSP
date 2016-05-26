@@ -1,6 +1,7 @@
 package com.cpj.biblioteca.service;
 
 import com.cpj.biblioteca.dao.AutorLivroDAO;
+import com.cpj.biblioteca.modelo.Autor;
 import com.cpj.biblioteca.modelo.AutorLivro;
 import com.cpj.biblioteca.modelo.AutorLivroCodigo;
 import java.sql.SQLException;
@@ -62,9 +63,9 @@ public class AutorLivroService {
         }
     }
     
-    public AutorLivro buscarPeloCodigo(Long codigoEmprestimo) throws CPJException{
+    public AutorLivro buscarPeloCodigo(AutorLivro autorLivro) throws CPJException{
         try {
-            return emprestimoDAO.buscarPeloCodigo(codigoEmprestimo);
+            return emprestimoDAO.buscarPeloCodigo(autorLivro);
         } catch (ClassNotFoundException ex) {
             throw new CPJException("Driver do MySQL não encontrado.");
         } catch (SQLException ex) {

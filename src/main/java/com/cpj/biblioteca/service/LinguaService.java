@@ -56,7 +56,7 @@ public class LinguaService {
         }
     }
     
-    public Lingua buscarPeloCodigo(Long codigoLingua) throws CPJException{
+    public Lingua buscarPeloCodigo(Lingua codigoLingua) throws CPJException{
         try {
             return linguaDAO.buscarPeloCodigo(codigoLingua);
         } catch (ClassNotFoundException ex) {

@@ -68,7 +68,7 @@ public class LeitorService {
         }
     }
     
-    public Leitor buscarPeloCodigo(Long codigoLeitor) throws CPJException{
+    public Leitor buscarPeloCodigo(Leitor codigoLeitor) throws CPJException{
         try {
             return leitorDAO.buscarPeloCodigo(codigoLeitor);
         } catch (ClassNotFoundException ex) {

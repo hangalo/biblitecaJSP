@@ -62,7 +62,7 @@ public class MunicipioService {
         }
     }
     
-    public Municipio buscarPeloCodigo(Long codigoMunicipio) throws CPJException{
+    public Municipio buscarPeloCodigo(Municipio codigoMunicipio) throws CPJException{
         try {
             return municipioDAO.buscarPeloCodigo(codigoMunicipio);
         } catch (ClassNotFoundException ex) {

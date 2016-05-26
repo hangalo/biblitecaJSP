@@ -69,15 +69,15 @@ public class CategoriaDAO implements DAO<Categoria>{
     }
 
     @Override
-    public Categoria buscarPeloCodigo(Serializable codigo) throws SQLException, ClassNotFoundException {
+    public Categoria buscarPeloCodigo( Categoria categoria ) throws SQLException, ClassNotFoundException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * FROM categoria WHERE id_categoria = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, (Long)codigo);
+            prepareStatement.setLong(1, categoria.getCodigo());
             
             resultSet = prepareStatement.executeQuery();
-            Categoria categoria = new Categoria();
+           
             
             if (resultSet.next()) {                
                 categoria.setCodigo(resultSet.getLong("id_categoria"));

@@ -64,16 +64,15 @@ public class LinguaDAO implements DAO<Lingua> {
     }
 
     @Override
-    public Lingua buscarPeloCodigo(Serializable codigo) throws SQLException, ClassNotFoundException {
+    public Lingua buscarPeloCodigo(Lingua lingua) throws SQLException, ClassNotFoundException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * FROM lingua WHERE id_lingua = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, (Long)codigo);
+            prepareStatement.setLong(1, lingua.getCodigo());
             
             resultSet = prepareStatement.executeQuery();
-            Lingua lingua = new Lingua();
-            
+                      
             if (resultSet.next()) {                
                 lingua.setCodigo(resultSet.getLong("id_lingua"));
                 lingua.setNome(resultSet.getString("nome_lingua"));

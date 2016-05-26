@@ -69,5 +69,10 @@ public class Municipio implements Serializable {
         final Municipio other = (Municipio) obj;
         return Objects.equals(this.codigo, other.codigo);
     }
+
+    @Override
+    public String toString() {
+        return this.nome;
+    }
     
 }

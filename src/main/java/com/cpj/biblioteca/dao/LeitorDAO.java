@@ -82,15 +82,15 @@ public class LeitorDAO implements DAO<Leitor> {
     }
 
     @Override
-    public Leitor buscarPeloCodigo(Serializable codigo) throws ClassNotFoundException, SQLException {
+    public Leitor buscarPeloCodigo(Leitor leitor) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT l.*, m.* FROM leitor l, municipio m where l.id_municipio = m.id_municipio AND id_leitor = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, (Long) codigo);
+            prepareStatement.setLong(1, leitor.getCodigo());
 
             resultSet = prepareStatement.executeQuery();
-            Leitor leitor = new Leitor();
+          
             if (resultSet.next()) {
                 Municipio municipio = new Municipio();
 

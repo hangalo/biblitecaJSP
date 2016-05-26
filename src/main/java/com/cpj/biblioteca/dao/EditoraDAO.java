@@ -72,15 +72,15 @@ public class EditoraDAO implements DAO<Editora>{
     }
 
     @Override
-    public Editora buscarPeloCodigo(Serializable codigo) throws ClassNotFoundException, SQLException {
+    public Editora buscarPeloCodigo(Editora editora) throws ClassNotFoundException, SQLException {
         try {
             
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT e.*, m.* FROM editora e, municipio m where e.id_municipio = m.id_municipio AND e.id_editora = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, (Long)codigo);
+            prepareStatement.setLong(1, editora.getCodigo());
             resultSet = prepareStatement.executeQuery();
-            Editora editora=  new Editora();
+          
             if(resultSet.next()) {
                 Municipio municipio = new Municipio();
                 editora.setCodigo(resultSet.getLong("id_editora"));

@@ -80,19 +80,19 @@ public class EmprestimoDAO implements DAO<Emprestimo> {
     }
 
     @Override
-    public Emprestimo buscarPeloCodigo(Serializable codigo) throws ClassNotFoundException, SQLException {
+    public Emprestimo buscarPeloCodigo(Emprestimo emprestimo ) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT emprestimo.*, livro.*, leitor.* "
                     + "FROM emprestimo, livro, leitor "
                     + "WHERE emprestimo.id_livro = livro.id_livro AND emprestimo.id_leitor = leitor.id_leitor AND id_livro = ? AND id_leitor = ? AND data_emprestimo = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, ((EmprestimoCodigo) codigo).getLivro().getCodigo());
-            prepareStatement.setLong(2, ((EmprestimoCodigo) codigo).getLeitor().getCodigo());
-            prepareStatement.setDate(3, new Date(((EmprestimoCodigo) codigo).getDataHoraEmprestimo().getTime()));
+            prepareStatement.setLong(1, emprestimo.getCodigo().getLivro().getCodigo());
+            prepareStatement.setLong(2, emprestimo.getCodigo().getLeitor().getCodigo());
+            prepareStatement.setDate(3, new Date(emprestimo.getCodigo().getDataHoraEmprestimo().getTime()));
 
             resultSet = prepareStatement.executeQuery();
-            Emprestimo emprestimo = new Emprestimo();
+            
 
             if (resultSet.next()) {
                 Livro livro = new Livro();

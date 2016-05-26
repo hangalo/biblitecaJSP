@@ -64,15 +64,15 @@ public class ProvinciaDAO implements DAO<Provincia>{
     }
 
     @Override
-    public Provincia buscarPeloCodigo(Serializable codigo) throws SQLException, ClassNotFoundException {
+    public Provincia buscarPeloCodigo( Provincia provincia ) throws SQLException, ClassNotFoundException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * FROM provincia WHERE id_provincia = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, (Long)codigo);
+            prepareStatement.setLong(1, provincia.getCodigo());
             
             resultSet = prepareStatement.executeQuery();
-            Provincia provincia = new Provincia();
+          
             
             if (resultSet.next()) {                
                 provincia.setCodigo(resultSet.getLong("id_provincia"));

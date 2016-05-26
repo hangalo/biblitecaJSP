@@ -71,19 +71,19 @@ public class AutorLivroDAO implements DAO<AutorLivro>{
     }
 
     @Override
-    public AutorLivro buscarPeloCodigo(Serializable codigo) throws ClassNotFoundException, SQLException {
+    public AutorLivro buscarPeloCodigo( AutorLivro autorLivro) throws ClassNotFoundException, SQLException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * FROM autor_livro, autor, livro "
                        + "WHERE livro_id_livro = id_livro AND id_livro = ? AND autor_id_autor = id_autor AND id_autor = ?";
             
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, ((AutorLivroCodigo)codigo).getAutor().getCodigo());
-            prepareStatement.setLong(2, ((AutorLivroCodigo)codigo).getLivro().getCodigo());
+            prepareStatement.setLong(1, autorLivro.getCodigo().getAutor().getCodigo());
+            prepareStatement.setLong(2, autorLivro.getCodigo().getLivro().getCodigo());
             
             resultSet = prepareStatement.executeQuery();
 
-            AutorLivro autorLivro = new AutorLivro();
+           
             if (resultSet.next()) {
                 
                 Autor autor = new Autor();

@@ -63,7 +63,7 @@ public class EmprestimoService {
         }
     }
     
-    public Emprestimo buscarPeloCodigo(Long codigoEmprestimo) throws CPJException{
+    public Emprestimo buscarPeloCodigo(Emprestimo codigoEmprestimo) throws CPJException{
         try {
             return emprestimoDAO.buscarPeloCodigo(codigoEmprestimo);
         } catch (ClassNotFoundException ex) {

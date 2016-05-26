@@ -56,7 +56,7 @@ public class CategoriaService {
         }
     }
     
-    public Categoria buscarPeloCodigo(Long codigoCategoria) throws CPJException{
+    public Categoria buscarPeloCodigo(Categoria codigoCategoria) throws CPJException{
         try {
             return categoriaDAO.buscarPeloCodigo(codigoCategoria);
         } catch (ClassNotFoundException ex) {

@@ -66,15 +66,15 @@ public class MunicipioDAO implements DAO<Municipio>{
     }
 
     @Override
-    public Municipio buscarPeloCodigo(Serializable codigo) throws SQLException, ClassNotFoundException {
+    public Municipio buscarPeloCodigo( Municipio municipio) throws SQLException, ClassNotFoundException {
         try {
             Connection conexao = Conexao.criarConexao();
             String sql = "SELECT * FROM municipio WHERE id_municipio = ?";
             prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, (Long)codigo);
+            prepareStatement.setLong(1, municipio.getCodigo());
             
             resultSet = prepareStatement.executeQuery();
-            Municipio municipio = new Municipio();
+         
             
             if (resultSet.next()) {                
                 municipio.setCodigo(resultSet.getLong("id_municipio"));

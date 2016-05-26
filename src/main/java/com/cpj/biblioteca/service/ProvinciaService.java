@@ -56,7 +56,7 @@ public class ProvinciaService {
         }
     }
     
-    public Provincia buscarPeloCodigo(Long codigoProvincia) throws CPJException{
+    public Provincia buscarPeloCodigo(Provincia codigoProvincia) throws CPJException{
         try {
             return provinciaDAO.buscarPeloCodigo(codigoProvincia);
         } catch (ClassNotFoundException ex) {

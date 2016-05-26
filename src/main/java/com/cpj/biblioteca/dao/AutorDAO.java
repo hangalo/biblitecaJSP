@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class AutorDAO implements DAO<Autor> {
 
-    private static final String BUSCAR_TUDO = "SELECT a.id_autor, a.nome_autor, a.sobrenome_autor, a.data_nascimento, a.breve_biografica, m.id_municipio from autor a inner join municipio m on a.id_municipio = m.id_municipio";
+    private static final String BUSCAR_TUDO = "SELECT a.id_autor, a.nome_autor, a.sobrenome_autor, a.data_nascimento, a.breve_biografica, m.nome_municipio FROM autor a inner join municipio m on a.id_municipio = m.id_municipio";
   
     Connection conexao;
 
@@ -181,7 +181,11 @@ public class AutorDAO implements DAO<Autor> {
             autor.setCodigo(resultSet.getLong("a.id_autor"));
             autor.setNome(resultSet.getString("a.nome_autor"));
             autor.setSobrenome(resultSet.getString("a.sobrenome_autor"));
+          
             autor.setDataNascimento(resultSet.getDate("a.data_nascimento"));
+              Municipio municipio = new Municipio();
+            municipio.setNome(resultSet.getString("m.nome_municipio"));
+            autor.setMunicipio(municipio);
             autor.setBiografia(resultSet.getString("a.breve_biografica"));
 
         } catch (SQLException ex) {

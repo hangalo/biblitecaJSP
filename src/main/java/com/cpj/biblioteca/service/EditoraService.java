@@ -14,35 +14,23 @@ public class EditoraService {
     private EditoraDAO editoraDAO = new EditoraDAO();
     
     public String salvar(Editora editora) throws CPJException{
-        try {
-            if(editora.getNome() == null || editora.getNome().isEmpty()) {
-                return "O nome do município é obrigatório";
-            }
-            if(editora.getMunicipio() == null) {
-                return "Seleccione o município";
-            }
-            return editoraDAO.salvar(editora)? "Município salvo com sucesso.":"Aconteceu um erro ao salvar o município. Consulte o administrador do sistema para mais informações.";
-        } catch (ClassNotFoundException ex) {
-            throw new CPJException("Driver do MySQL não encontrado.");
-        } catch (SQLException ex) {
-            throw new CPJException("Erro: " + ex.getMessage());
+        if(editora.getNome() == null || editora.getNome().isEmpty()) {
+            return "O nome do município é obrigatório";
         }
+        if(editora.getMunicipio() == null) {
+            return "Seleccione o município";
+        }
+        return editoraDAO.salvar(editora)? "Município salvo com sucesso.":"Aconteceu um erro ao salvar o município. Consulte o administrador do sistema para mais informações.";
     }
     
     public String editar(Editora editora) throws CPJException{
-        try {
-            if(editora.getNome() == null || editora.getNome().isEmpty()) {
-                return "O nome do município é obrigatório";
-            }
-            if(editora.getMunicipio()== null) {
-                return "Seleccione a província";
-            }
-            return editoraDAO.editar(editora)? "Município editado com sucesso.":"Não foi possível salvar a edição feita. Consulte o administrador do sistema para mais informações.";
-        } catch (ClassNotFoundException ex) {
-            throw new CPJException("Driver do MySQL não encontrado.");
-        } catch (SQLException ex) {
-            throw new CPJException("Erro: " + ex.getMessage());
+        if(editora.getNome() == null || editora.getNome().isEmpty()) {
+            return "O nome do município é obrigatório";
         }
+        if(editora.getMunicipio()== null) {
+            return "Seleccione a província";
+        }
+        return editoraDAO.editar(editora)? "Município editado com sucesso.":"Não foi possível salvar a edição feita. Consulte o administrador do sistema para mais informações.";
     }
     
     public String excluir(Editora editora) throws CPJException{
@@ -64,23 +52,11 @@ public class EditoraService {
     }
     
     public Editora buscarPeloCodigo(Editora codigoMunicipio) throws CPJException{
-        try {
-            return editoraDAO.buscarPeloCodigo(codigoMunicipio);
-        } catch (ClassNotFoundException ex) {
-            throw new CPJException("Driver do MySQL não encontrado.");
-        } catch (SQLException ex) {
-            throw new CPJException("Erro: " + ex.getMessage());
-        }
+        return editoraDAO.buscarPeloCodigo(codigoMunicipio);
     }
     
     public List<Editora> buscarTudo() throws CPJException{
-        try {
-            return editoraDAO.buscarTudo();
-        } catch (ClassNotFoundException ex) {
-            throw new CPJException("Driver do MySQL não encontrado.");
-        } catch (SQLException ex) {
-            throw new CPJException("Erro: " + ex.getMessage());
-        }
+        return editoraDAO.buscarTudo();
     }
     
     public List<Editora> filtar(Long linhaInicial, Long totalDeLinhas) throws CPJException{

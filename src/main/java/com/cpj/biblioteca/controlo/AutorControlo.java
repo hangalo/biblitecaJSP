@@ -11,6 +11,7 @@ import com.cpj.biblioteca.modelo.Municipio;
 import com.cpj.biblioteca.util.DataUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -89,8 +90,8 @@ public class AutorControlo extends HttpServlet {
             
             
 
-        } catch (Exception ex) {
-
+        } catch (NumberFormatException | ClassNotFoundException | SQLException | ServletException | IOException ex) {
+            System.err.println("Erro ao ler dados do formularios" +ex.getMessage());
         }
     }
 

@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,237 +21,176 @@ import java.util.List;
  */
 public class CategoriaLivroDAO implements DAO<CategoriaLivro> {
 
-    private PreparedStatement prepareStatement;
-    private ResultSet resultSet;
+    private static final String INSERIR = "INSERT INTO livro_categoria(livro_id_livro, categoria_id_categoria, data_registo) VALUES (?, ?, ?)";
+    private static final String ACTUALISAR = "UPDATE livro_categoria SET data_registo = ? WHERE livro_id_livro = ? AND categoria_id_categoria = ?";
+    private static final String LISTA_TUDO = "SELECT livro.* FROM livro_categoria, livro "
+            + " WHERE categoria_id_categoria = id_categoria AND livro_id_livro = id_livro AND id_categoria = ? ";
+    private static final String BUSCA_POR_CODIGO = "SELECT livro.* FROM livro_categoria, livro "
+            + " WHERE categoria_id_categoria = id_categoria AND livro_id_livro = id_livro AND id_categoria = ? ";
+    private static final String ELIMINAR = "DELETE FROM livro_categoria WHERE categoria_id_categoria = ? AND livro_id_livro = ?";
 
-    @Override
-    public boolean salvar(CategoriaLivro categoriaLivro) throws ClassNotFoundException, SQLException {
-        try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "INSERT INTO livro_categoria(livro_id_livro, categoria_id_categoria, data_registo) VALUES (?, ?, ?)";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, categoriaLivro.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(2, categoriaLivro.getCodigo().getCategoria().getCodigo());
-            prepareStatement.setDate(3, new Date(categoriaLivro.getDataRegisto().getTime()));
-            return prepareStatement.executeUpdate() > 0;
-        } finally {
-            Conexao.fecharTudo(prepareStatement);
-        }
+    private Connection con;
+
+    public CategoriaLivroDAO() {
+        con = Conexao.criarConexao();
     }
 
     @Override
-    public boolean editar(CategoriaLivro categoriaLivro) throws ClassNotFoundException, SQLException {
+    public boolean salvar(CategoriaLivro categoriaLivro) {
+        boolean sucesso = false;
+        PreparedStatement ps = null;
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "UPDATE livro_categoria SET data_registo = ? WHERE livro_id_livro = ? AND categoria_id_categoria = ?";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setDate(1, new Date(categoriaLivro.getDataRegisto().getTime()));
-            prepareStatement.setLong(2, categoriaLivro.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(3, categoriaLivro.getCodigo().getCategoria().getCodigo());
-            return prepareStatement.executeUpdate() > 0;
+            ps = con.prepareStatement(INSERIR);
+            ps.setLong(1, categoriaLivro.getCodigo().getLivro().getCodigo());
+            ps.setLong(2, categoriaLivro.getCodigo().getCategoria().getCodigo());
+            ps.setDate(3, new Date(categoriaLivro.getDataRegisto().getTime()));
+
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao inserir dados" + ex.getMessage());
         } finally {
-            Conexao.fecharTudo(prepareStatement);
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+            }
         }
-    }
-    
-    public boolean editarCategoriaDoLivro(CategoriaLivro categoriaLivro, Long codigoCategoriaAntigo) throws ClassNotFoundException, SQLException {
-        try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "UPDATE livro_categoria SET categoria_id_categoria = ? WHERE livro_id_livro = ? AND categoria_id_categoria = ? ";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, categoriaLivro.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(2, categoriaLivro.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(3, codigoCategoriaAntigo);
-            return prepareStatement.executeUpdate() > 0;
-        } finally {
-            Conexao.fecharTudo(prepareStatement);
-        }
+        return sucesso;
     }
 
     @Override
-    public boolean excluir(CategoriaLivro entidade) throws ClassNotFoundException, SQLException {
-        return excluir(entidade.getCodigo());
-    }
-    
-    @Override
-    public boolean excluir(Serializable entidade) throws ClassNotFoundException, SQLException {
+    public boolean editar(CategoriaLivro categoriaLivro) {
+        boolean sucesso = false;
+        PreparedStatement ps = null;
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "DELETE FROM livro_categoria WHERE categoria_id_categoria = ? AND livro_id_livro = ?";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, ((CategoriaLivroCodigo)entidade).getCategoria().getCodigo());
-            prepareStatement.setLong(2, ((CategoriaLivroCodigo)entidade).getLivro().getCodigo());
-            return prepareStatement.executeUpdate() > 0;
+            ps = con.prepareStatement(ACTUALISAR);
+            ps.setDate(1, new Date(categoriaLivro.getDataRegisto().getTime()));
+            ps.setLong(2, categoriaLivro.getCodigo().getLivro().getCodigo());
+            ps.setLong(3, categoriaLivro.getCodigo().getCategoria().getCodigo());
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao inserir dados" + ex.getMessage());
         } finally {
-            Conexao.fecharTudo(prepareStatement);
-        }
-    }
-
-    @Override
-    public CategoriaLivro buscarPeloCodigo(CategoriaLivro categoriaLivro) throws ClassNotFoundException, SQLException {
-        try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT * FROM livro_categoria, categoria, livro "
-                    + "WHERE categoria_id_categoria = id_categoria AND livro_id_livro = id_livro AND id_categoria = ? AND id_livro = ? ";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, categoriaLivro.getCodigo().getCategoria().getCodigo());
-            prepareStatement.setLong(2, categoriaLivro.getCodigo().getLivro().getCodigo());
-
-            resultSet = prepareStatement.executeQuery();
-            
-            
-            if (resultSet.next()) {
-                Categoria categoria = new Categoria();
-                categoria.setCodigo(resultSet.getLong("categoria.id_categoria"));
-                categoria.setNome(resultSet.getString("categoria.nome_categoria"));
-
-                Livro livro = new Livro();
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-
-                categoriaLivro.setCodigo(new CategoriaLivroCodigo(livro, categoria));
-                categoriaLivro.setDataRegisto(resultSet.getDate("livro_categoria.data_registo"));
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
             }
-
-            return categoriaLivro;
-        } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
         }
+        return sucesso;
     }
 
     @Override
-    public List<CategoriaLivro> buscarTudo() throws ClassNotFoundException, SQLException {
-        return aplicarFiltro(0L, 0L, false);
-    }
-
-    public List<CategoriaLivro> filtrar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
-        return aplicarFiltro(linhaInicial, totalDeLinhas, true);
-    }
-
-    private List<CategoriaLivro> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    public boolean excluir(CategoriaLivro categoriaLivro) {
+        PreparedStatement ps = null;
+        boolean sucesso = false;
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT * FROM livro_categoria, categoria, livro "
-                    + " WHERE categoria_id_categoria = id_categoria AND livro_id_livro = id_livro ";
-            if (filtroActivo) {
-                sql = sql + " LIMIT ?, ?";
-            }
-
-            prepareStatement = conexao.prepareStatement(sql);
-            if (filtroActivo) {
-                prepareStatement.setLong(1, linhaInicial);
-                prepareStatement.setLong(2, totalDeLinhas);
-            }
-
-            resultSet = prepareStatement.executeQuery();
-
-            List<CategoriaLivro> categoriasLivros = new ArrayList<>();
-            while (resultSet.next()) {
-                CategoriaLivro categoriaLivro = new CategoriaLivro();
-                Categoria categoria = new Categoria();
-                categoria.setCodigo(resultSet.getLong("categoria.id_categoria"));
-                categoria.setNome(resultSet.getString("categoria.nome_categoria"));
-
-                Livro livro = new Livro();
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-
-                categoriaLivro.setCodigo(new CategoriaLivroCodigo(livro, categoria));
-                categoriaLivro.setDataRegisto(resultSet.getDate("livro_categoria.data_registo"));
-                categoriasLivros.add(categoriaLivro);
-            }
-            return categoriasLivros;
+            ps = con.prepareStatement(ELIMINAR);
+            ps.setLong(1, categoriaLivro.getIdRegisto());
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao actualizar dados" + ex.getMessage());
         } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+            }
         }
+        return sucesso;
     }
-    
-    public List<Livro> filtrarLivrosPeloCodigoDaCategoria(Long codigoCategoria, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
-        return aplicarFiltroPorCategoria(codigoCategoria, linhaInicial, totalDeLinhas, true);
-    }
-    
-    public List<Livro> filtrarLivrosPeloCodigoDaCategoria(Categoria categoria, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
-        return aplicarFiltroPorCategoria(categoria.getCodigo(), linhaInicial, totalDeLinhas, true);
-    }
-    
-    private List<Livro> aplicarFiltroPorCategoria(Long codigoCategoria, Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+
+    @Override
+    public CategoriaLivro buscarPeloCodigo(CategoriaLivro categoriaLivro) {
+        PreparedStatement ps = null;
+
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT livro.* FROM livro_categoria, livro "
-                    + " WHERE categoria_id_categoria = id_categoria AND livro_id_livro = id_livro AND id_categoria = ? ";
-            if (filtroActivo) {
-                sql = sql + " LIMIT ?, ?";
-            }
+            ps = con.prepareStatement(BUSCA_POR_CODIGO);
+            ps.setLong(1, categoriaLivro.getIdRegisto());
 
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, codigoCategoria);
-            if (filtroActivo) {
-                prepareStatement.setLong(2, linhaInicial);
-                prepareStatement.setLong(3, totalDeLinhas);
-            }
+            ResultSet rs = ps.executeQuery();
 
-            resultSet = prepareStatement.executeQuery();
-
-            List<Livro> livros = new ArrayList<>();
-            while (resultSet.next()) {
-                Livro livro = new Livro();
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-                
-                livros.add(livro);
+            if (!rs.next()) {
+                return null;
             }
-            return livros;
+            popularComDados(categoriaLivro, rs);
+
+        } catch (SQLException ex) {
+            System.err.println("Erro ao recuperar dados da editora" + ex.getMessage());
         } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+
+            } catch (SQLException e) {
+                System.err.println("Erro ao desalocar recursos" + e.getMessage());
+            }
         }
+
+        return categoriaLivro;
     }
-    
-    public Livro filtrarCategoriasDoLivro(Livro livro, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
-        return aplicarFiltroPorLivro(livro, linhaInicial, totalDeLinhas, true);
-    }
-    
-    private Livro aplicarFiltroPorLivro(Livro livro, Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+
+    @Override
+    public List<CategoriaLivro> buscarTudo() {
+        List<CategoriaLivro> categorias = new ArrayList<>();
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT categoria.* FROM livro_categoria, categoria "
-                    + " WHERE categoria_id_categoria = id_categoria AND livro_id_livro = ? ";
-            
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, livro.getCodigo());
-            
-            resultSet = prepareStatement.executeQuery();
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(LISTA_TUDO);
+            while (rs.next()) {
+                CategoriaLivro categoria = new CategoriaLivro();
+                popularComDados(categoria, rs);
+                categorias.add(categoria);
 
-            while (resultSet.next()) {
-                Categoria categoria = new Categoria();
-                categoria.setCodigo(resultSet.getLong("categoria.id_categoria"));
-                categoria.setNome(resultSet.getString("categoria.nome_categoria"));
-                
-                livro.addCategoria(categoria);
             }
-            return livro;
-        } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
+            st.close();
+            rs.close();
+        } catch (SQLException ex) {
+            System.err.println("Erro ao recupera dados da Editora" + ex.getMessage());
         }
+
+        return categorias;
+    }
+
+    private void popularComDados(CategoriaLivro categoriaLivro, ResultSet resultSet) {
+        try {
+
+            Categoria categoria = new Categoria();
+            categoria.setCodigo(resultSet.getLong("categoria.id_categoria"));
+            categoria.setNome(resultSet.getString("categoria.nome_categoria"));
+
+            Livro livro = new Livro();
+            livro.setCodigo(resultSet.getLong("livro.id_livro"));
+            livro.setTitulo(resultSet.getString("livro.titulo"));
+            livro.setIsbn(resultSet.getString("livro.isbn"));
+            livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
+            livro.setEdicao(resultSet.getString("livro.edicao"));
+            livro.setResumo(resultSet.getString("livro.resumo"));
+            livro.setSessao(resultSet.getString("livro.sessao"));
+            livro.setEstante(resultSet.getInt("livro.estante"));
+            livro.setPosicao(resultSet.getInt("livro.posicao"));
+
+            categoriaLivro.setCodigo(new CategoriaLivroCodigo(livro, categoria));
+            categoriaLivro.setDataRegisto(resultSet.getDate("livro_categoria.data_registo"));
+
+        } catch (SQLException ex) {
+            System.err.println("Erro ao ler dados da Editora" + ex.getMessage());
+        }
+
     }
 }

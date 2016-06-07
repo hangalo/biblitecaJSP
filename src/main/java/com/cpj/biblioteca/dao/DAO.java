@@ -9,10 +9,9 @@ import java.util.List;
  * @author Chandimba
  */
 public interface DAO<T> {
-    public boolean salvar(T entidade) throws ClassNotFoundException, SQLException ;
-    public boolean editar(T entidade) throws ClassNotFoundException, SQLException ;
-    public boolean excluir(T entidade) throws ClassNotFoundException, SQLException ;
-    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException ;
-    public T buscarPeloCodigo(T entidade)throws ClassNotFoundException, SQLException ;
-    public List<T> buscarTudo() throws ClassNotFoundException, SQLException ;
+    public boolean salvar(T entidade) ;
+    public boolean editar(T entidade)  ;
+    public boolean excluir(T entidade)  ;
+    public T buscarPeloCodigo(T entidade) ;
+    public List<T> buscarTudo()  ;
 }

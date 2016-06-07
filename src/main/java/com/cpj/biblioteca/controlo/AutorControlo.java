@@ -90,7 +90,7 @@ public class AutorControlo extends HttpServlet {
             
             
 
-        } catch (NumberFormatException | ClassNotFoundException | SQLException | ServletException | IOException ex) {
+        } catch (NumberFormatException | ServletException | IOException ex) {
             System.err.println("Erro ao ler dados do formularios" +ex.getMessage());
         }
     }

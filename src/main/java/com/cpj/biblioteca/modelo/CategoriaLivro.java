@@ -8,6 +8,7 @@ import java.util.Objects;
  * @author Chandimba
  */
 public class CategoriaLivro {
+    private Long idRegisto;
     private CategoriaLivroCodigo codigo;
     private Date dataRegisto;
 
@@ -44,6 +45,16 @@ public class CategoriaLivro {
     private void criarDataRegistoAutomaticamente() {
         this.dataRegisto = new Date();
     }
+
+    public Long getIdRegisto() {
+        return idRegisto;
+    }
+
+    public void setIdRegisto(Long idRegisto) {
+        this.idRegisto = idRegisto;
+    }
+    
+    
 
     @Override
     public int hashCode() {

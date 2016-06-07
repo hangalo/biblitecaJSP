@@ -5,12 +5,14 @@ import com.cpj.biblioteca.modelo.Emprestimo;
 import com.cpj.biblioteca.modelo.EmprestimoCodigo;
 import com.cpj.biblioteca.modelo.Leitor;
 import com.cpj.biblioteca.modelo.Livro;
+import com.cpj.biblioteca.modelo.Municipio;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,213 +23,184 @@ import java.util.List;
  */
 public class EmprestimoDAO implements DAO<Emprestimo> {
 
-    private PreparedStatement prepareStatement;
-    private ResultSet resultSet;
+    private static final String INSERIR = "INSERT INTO emprestimo(id_livro, id_leitor, data_emprestimo, data_devolucao, observacoes) VALUES (?, ?, ?, ?, ?)";
+    private static final String ACTUALISAR = "UPDATE emprestimo data_devolucao = ?, observacoes =? WHERE id_livro = ?, id_leitor = ?, data_emprestimo = ? ";
+    private static final String LISTA_TUDO = "SELECT * FROM leitor";
+    /* A consulta nao devolve os dez livros mais procurados mais os primeiros dez da consulta*/
+    private static final String DEZ_MAIS_PROCURADOS="SELECT livro.* FROM emprestimo, livro WHERE emprestimo.id_livro = livro.id_livro LIMIT 10";
+    private static final String BUSCA_POR_CODIGO = "SELECT emprestimo.*, livro.*, leitor.* FROM emprestimo, livro, leitor WHERE emprestimo.id_livro = livro.id_livro AND emprestimo.id_leitor = leitor.id_leitor AND id_livro = ? AND id_leitor = ? AND data_emprestimo = ?";
+    private static final String ELIMINAR = "DELETE FROM emprestimo WHERE id_livro = ? AND id_leitor = ? AND data_emprestimo = ?";
+    private Connection con;
+
+    public EmprestimoDAO() {
+        con = Conexao.criarConexao();
+    }
 
     @Override
-    public boolean salvar(Emprestimo emprestimo) throws ClassNotFoundException, SQLException {
+    public boolean salvar(Emprestimo emprestimo) {
+        boolean sucesso = false;
+        PreparedStatement ps = null;
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "INSERT INTO emprestimo(id_livro, id_leitor, data_emprestimo, data_devolucao, observacoes) VALUES (?, ?, ?, ?, ?)";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, emprestimo.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(2, emprestimo.getCodigo().getLeitor().getCodigo());
-            prepareStatement.setTimestamp(3, new Timestamp(emprestimo.getCodigo().getDataHoraEmprestimo().getTime()));
-            prepareStatement.setTimestamp(4, new Timestamp(emprestimo.getDataHoraDevolucao().getTime()));
-            prepareStatement.setString(5, emprestimo.getObservacao());
-            return prepareStatement.executeUpdate() > 0;
+            ps = con.prepareStatement(INSERIR);
+            ps.setString(5, emprestimo.getObservacao());
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao inserir dados" + ex.getMessage());
         } finally {
-            Conexao.fecharTudo(prepareStatement);
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+            }
         }
+        return sucesso;
     }
 
     @Override
-    public boolean editar(Emprestimo emprestimo) throws ClassNotFoundException, SQLException {
+    public boolean editar(Emprestimo emprestimo) {
+        boolean sucesso = false;
+        PreparedStatement ps = null;
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "UPDATE emprestimo data_devolucao = ?, observacoes =? "
-                    + "WHERE id_livro = ?, id_leitor = ?, data_emprestimo = ? ";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setTimestamp(1, new Timestamp(emprestimo.getDataHoraDevolucao().getTime()));
-            prepareStatement.setString(2, emprestimo.getObservacao());
-            prepareStatement.setLong(3, emprestimo.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(4, emprestimo.getCodigo().getLeitor().getCodigo());
-            prepareStatement.setTimestamp(5, new Timestamp(emprestimo.getCodigo().getDataHoraEmprestimo().getTime()));
-            return prepareStatement.executeUpdate() > 0;
+            ps = con.prepareStatement(ACTUALISAR);
+            ps.setTimestamp(1, new Timestamp(emprestimo.getDataHoraDevolucao().getTime()));
+            ps.setString(2, emprestimo.getObservacao());
+           
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao inserir dados" + ex.getMessage());
         } finally {
-            Conexao.fecharTudo(prepareStatement);
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+            }
         }
+        return sucesso;
     }
 
+   
     @Override
-    public boolean excluir(Emprestimo emprestimo) throws ClassNotFoundException, SQLException {
-        return excluir(emprestimo.getCodigo());
-    }
-
-    @Override
-    public boolean excluir(Serializable emprestimo) throws ClassNotFoundException, SQLException {
+    public boolean excluir(Emprestimo emprestimo) {
+        PreparedStatement ps = null;
+        boolean sucesso = false;
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "DELETE FROM emprestimo WHERE id_livro = ? AND id_leitor = ? AND data_emprestimo = ?";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, ((EmprestimoCodigo)emprestimo).getLivro().getCodigo());
-            prepareStatement.setLong(2, ((EmprestimoCodigo)emprestimo).getLeitor().getCodigo());
-            prepareStatement.setDate(3, new Date(((EmprestimoCodigo)emprestimo).getDataHoraEmprestimo().getTime()));
-            return prepareStatement.executeUpdate() > 0;
+            ps = con.prepareStatement(ELIMINAR);
+            ps.setLong(1, emprestimo.getCodigo());
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao actualizar dados" + ex.getMessage());
         } finally {
-            Conexao.fecharTudo(prepareStatement);
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+            }
         }
+        return sucesso;
     }
-
+    
     @Override
-    public Emprestimo buscarPeloCodigo(Emprestimo emprestimo ) throws ClassNotFoundException, SQLException {
+    public Emprestimo buscarPeloCodigo(Emprestimo emprestimo) {
+        PreparedStatement ps = null;
+        
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT emprestimo.*, livro.*, leitor.* "
-                    + "FROM emprestimo, livro, leitor "
-                    + "WHERE emprestimo.id_livro = livro.id_livro AND emprestimo.id_leitor = leitor.id_leitor AND id_livro = ? AND id_leitor = ? AND data_emprestimo = ?";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, emprestimo.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(2, emprestimo.getCodigo().getLeitor().getCodigo());
-            prepareStatement.setDate(3, new Date(emprestimo.getCodigo().getDataHoraEmprestimo().getTime()));
-
-            resultSet = prepareStatement.executeQuery();
+            ps = con.prepareStatement(BUSCA_POR_CODIGO);
+            ps.setLong(1, emprestimo.getCodigo());
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                return null;
+            }
+            popularComDados(emprestimo, rs);
             
-
-            if (resultSet.next()) {
-                Livro livro = new Livro();
-                Leitor leitor = new Leitor();
-
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-
-                leitor.setCodigo(resultSet.getLong("leitor.id_leitor"));
-                leitor.setNome(resultSet.getString("leitor.nome_leitor"));
-                leitor.setSobrenome(resultSet.getString("leitor.sobrenome_leitor"));
-                leitor.setDataNascimento(resultSet.getDate("leitor.data_nascimento"));
-                leitor.setDataInscricao(resultSet.getDate("leitor.data_inscricao"));
-                leitor.setBairro(resultSet.getString("leitor.bairro_leitor"));
-                leitor.setCasa(resultSet.getString("leitor.rua_leitor"));
-                leitor.setRua(resultSet.getString("leitor.casa_leitor"));
-
-                emprestimo.setCodigo(new EmprestimoCodigo(leitor, livro, resultSet.getDate("data_emprestimo")));
-                emprestimo.setDataHoraDevolucao(resultSet.getDate("data_devolucao"));
-                emprestimo.setObservacao(resultSet.getString("observacoes"));
-            }
-
-            return emprestimo;
-        } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
+        } catch (SQLException ex) {
+            System.err.println("Erro ao recuperar dados da editora"+ex.getMessage());
         }
+        finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+               
+            } catch (SQLException e) {
+                System.err.println("Erro ao desalocar recursos"+e.getMessage());
+            }
+            }
+        
+        return emprestimo;
     }
-
-    @Override
-    public List<Emprestimo> buscarTudo() throws ClassNotFoundException, SQLException {
-        return aplicarFiltro(0L, 0L, false);
+    
+    public List<Emprestimo> buscarTudo(){
+    List<Emprestimo> emprestimos = new ArrayList<>();
+    try{
+    Statement st = con.createStatement();
+    ResultSet rs = st.executeQuery(LISTA_TUDO);
+     while(rs.next()){
+     Emprestimo emprestimo = new Emprestimo();
+         popularComDados(emprestimo, rs);
+         emprestimos.add(emprestimo);
+     
+     
+     }
+    st.close();
+    rs.close();
+    }catch(SQLException ex){
+        System.err.println("Erro ao recupera dados da Editora"+ex.getMessage());
     }
-
-    public List<Emprestimo> filtrar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
-        return aplicarFiltro(linhaInicial, totalDeLinhas, true);
+    
+    return emprestimos;
     }
+   
 
-    private List<Emprestimo> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    
+
+    private void popularComDados(Emprestimo emprestimo, ResultSet rs) {
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT * "
-                    + "FROM emprestimo, livro, leitor "
-                    + "WHERE emprestimo.id_livro = livro.id_livro AND emprestimo.id_leitor = leitor.id_leitor ";
-            if (filtroActivo) {
-                sql = sql + " LIMIT ?, ?";
-            }
 
-            prepareStatement = conexao.prepareStatement(sql);
-            if (filtroActivo) {
-                prepareStatement.setLong(1, linhaInicial);
-                prepareStatement.setLong(2, totalDeLinhas);
-            }
+            Livro livro = new Livro();
+            Leitor leitor = new Leitor();
 
-            resultSet = prepareStatement.executeQuery();
+            livro.setCodigo(rs.getLong("livro.id_livro"));
+            livro.setTitulo(rs.getString("livro.titulo"));
+            livro.setIsbn(rs.getString("livro.isbn"));
+            livro.setDataPublicacao(rs.getDate("livro.data_publicacao"));
+            livro.setEdicao(rs.getString("livro.edicao"));
+            livro.setResumo(rs.getString("livro.resumo"));
+            livro.setSessao(rs.getString("livro.sessao"));
+            livro.setEstante(rs.getInt("livro.estante"));
+            livro.setPosicao(rs.getInt("livro.posicao"));
 
-            List<Emprestimo> emprestimos = new ArrayList<>();
-            while (resultSet.next()) {
-                Emprestimo emprestimo = new Emprestimo();
-                Livro livro = new Livro();
-                Leitor leitor = new Leitor();
+            leitor.setCodigo(rs.getLong("leitor.id_leitor"));
+            leitor.setNome(rs.getString("leitor.nome_leitor"));
+            leitor.setSobrenome(rs.getString("leitor.sobrenome_leitor"));
+            leitor.setDataNascimento(rs.getDate("leitor.data_nascimento"));
+            leitor.setDataInscricao(rs.getDate("leitor.data_inscricao"));
+            leitor.setBairro(rs.getString("leitor.bairro_leitor"));
+            leitor.setCasa(rs.getString("leitor.rua_leitor"));
+            leitor.setRua(rs.getString("leitor.casa_leitor"));
 
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
+            emprestimo.setCodigo(rs.getInt("codigo_emprestimo"));
+            emprestimo.setDataHoraDevolucao(rs.getDate("data_devolucao"));
+            emprestimo.setObservacao(rs.getString("observacoes"));
 
-                leitor.setCodigo(resultSet.getLong("leitor.id_leitor"));
-                leitor.setNome(resultSet.getString("leitor.nome_leitor"));
-                leitor.setSobrenome(resultSet.getString("leitor.sobrenome_leitor"));
-                leitor.setDataNascimento(resultSet.getDate("leitor.data_nascimento"));
-                leitor.setDataInscricao(resultSet.getDate("leitor.data_inscricao"));
-                leitor.setBairro(resultSet.getString("leitor.bairro_leitor"));
-                leitor.setCasa(resultSet.getString("leitor.rua_leitor"));
-                leitor.setRua(resultSet.getString("leitor.casa_leitor"));
-
-                emprestimo.setCodigo(new EmprestimoCodigo(leitor, livro, resultSet.getDate("data_emprestimo")));
-                emprestimo.setDataHoraDevolucao(resultSet.getDate("data_devolucao"));
-                emprestimo.setObservacao(resultSet.getString("observacoes"));
-
-                emprestimos.add(emprestimo);
-            }
-            return emprestimos;
-        } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
+        } catch (SQLException ex) {
+            System.err.println("Erro ao ler dados" + ex.getMessage());
         }
-    }
 
-    public List<Livro> filtrarOsDezLivrosMaisProcurados() throws ClassNotFoundException, SQLException {
-        return aplicarFiltroDosDezLivrosMaisProcurados();
-    }
-
-    public List<Livro> aplicarFiltroDosDezLivrosMaisProcurados() throws ClassNotFoundException, SQLException {
-        try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT livro.* "
-                    + "FROM emprestimo, livro "
-                    + "WHERE emprestimo.id_livro = livro.id_livro "
-                    + "LIMIT 10";
-
-            prepareStatement = conexao.prepareStatement(sql);
-
-            resultSet = prepareStatement.executeQuery();
-
-            List<Livro> livros = new ArrayList<>();
-            while (resultSet.next()) {
-                Livro livro = new Livro();
-
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-
-                livros.add(livro);
-            }
-            return livros;
-        } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
-        }
     }
 
 }

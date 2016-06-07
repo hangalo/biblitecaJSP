@@ -3,7 +3,6 @@ package com.cpj.biblioteca.dao;
 import com.cpj.biblioteca.conexao.Conexao;
 import com.cpj.biblioteca.modelo.Editora;
 import com.cpj.biblioteca.modelo.Municipio;
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,7 +21,7 @@ public class EditoraDAO implements DAO<Editora> {
     private static final String LISTA_TUDO = "SELECT id_editora, nome_editora, casa_editora, rua_editora, bairro_editora, caixa_postal_editora, telefone_fixo_editora, telefone_movel_editora, email_editora, home_page_editora, m.nome_municipio FROM editora e inner join municipio m on e.id_municipio = m.id_municipio";
     private static final String BUSCA_POR_CODIGO = "SELECT id_editora, nome_editora, casa_editora, rua_editora, bairro_editora, caixa_postal_editora, telefone_fixo_editora, telefone_movel_editora, email_editora, home_page_editora, m.nome_municipio FROM editora e inner join municipio m on e.id_municipio = m.id_municipio WHERE id_editora =?";
     private static final String ELIMINAR = "DELETE FROM editora WHERE id_editora =?";
-    private static final String ACTUALIZAR = "UPDATE editora SET nome_editora =?, casa_editora=?, rua_editora=?, bairro_editora=?, caixa_postal_editora=?, telefone_fixo_editora=?, telefone_movel_editora=?, email_editora=?, home_page_editora=?, id_municipio=? WHERE id_editora = ?";
+    private static final String ACTUALISAR = "UPDATE editora SET nome_editora =?, casa_editora=?, rua_editora=?, bairro_editora=?, caixa_postal_editora=?, telefone_fixo_editora=?, telefone_movel_editora=?, email_editora=?, home_page_editora=?, id_municipio=? WHERE id_editora = ?";
     
     private Connection con;
     
@@ -70,7 +69,7 @@ public class EditoraDAO implements DAO<Editora> {
         boolean sucesso = false;
         PreparedStatement ps = null;
         try {
-            ps = con.prepareStatement(ACTUALIZAR);
+            ps = con.prepareStatement(ACTUALISAR);
             
             ps.setString(1, editora.getNome());
             ps.setString(2, editora.getCasa());
@@ -157,7 +156,7 @@ public class EditoraDAO implements DAO<Editora> {
         return editora;
     }
     
-    public List<Editora> bustaTudo(){
+    public List<Editora> buscarTudo(){
     List<Editora> editoras = new ArrayList<>();
     try{
     Statement st = con.createStatement();
@@ -201,38 +200,13 @@ public class EditoraDAO implements DAO<Editora> {
         }
         
     }
+
+   
     
     
     
-    /**
-     * 
-     * Metodos criados pelo Nelson que acho(Hangalo) não necessario 
-     * olhando para o requisitos da aplicação
-     * 
-     */
-    @Override
-    public boolean excluir(Serializable codigo) throws ClassNotFoundException, SQLException {
-        return false;
-    }
     
-    @Override
-    public List<Editora> buscarTudo()  {
-      List<Editora> editoras = new ArrayList<>();
-           
-            return editoras;
-          
-    }
+   
     
-    public List<Editora> filtrar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
-        return aplicarFiltro(linhaInicial, totalDeLinhas, true);
-    }
-    
-    private List<Editora> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
-       
-            
-            List<Editora> editoras = new ArrayList<>();
-           
-            return editoras;
-        } 
     
 }

@@ -9,7 +9,6 @@ import com.cpj.biblioteca.dao.EditoraDAO;
 import com.cpj.biblioteca.modelo.Editora;
 import com.cpj.biblioteca.modelo.Municipio;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

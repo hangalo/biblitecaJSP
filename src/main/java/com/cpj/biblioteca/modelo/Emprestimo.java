@@ -10,17 +10,19 @@ import java.util.Objects;
  */
 public class Emprestimo implements Serializable {
 
-    private EmprestimoCodigo codigo;
+    private int codigo;
     private Date dataHoraDevolucao;
     private String observacao;
 
-    public EmprestimoCodigo getCodigo() {
+    public int getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(EmprestimoCodigo codigo) {
+    public void setCodigo(int codigo) {
         this.codigo = codigo;
     }
+
+    
 
     public Date getDataHoraDevolucao() {
         return dataHoraDevolucao;

@@ -7,6 +7,7 @@ import java.util.Objects;
  * @author Chandimba
  */
 public class AutorLivro {
+    private int codigoRegisto;
     private AutorLivroCodigo codigo;
     private int ano;
 
@@ -32,6 +33,14 @@ public class AutorLivro {
 
     public void setAno(int ano) {
         this.ano = ano;
+    }
+
+    public int getCodigoRegisto() {
+        return codigoRegisto;
+    }
+
+    public void setCodigoRegisto(int codigoRegisto) {
+        this.codigoRegisto = codigoRegisto;
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,200 +18,180 @@ import java.util.List;
  *
  * @author Chandimba
  */
-public class AutorLivroDAO implements DAO<AutorLivro>{
-    private PreparedStatement prepareStatement;
-    private ResultSet resultSet;
+public class AutorLivroDAO implements DAO<AutorLivro> {
+
+    private static final String INSERIR = "INSERT INTO autor_livro(livro_id_livro, autor_id_autor, ano) VALUES (?, ?, ?)";
+    private static final String ACTUALISAR = "UPDATE autor_livro SET ano = ? WHERE livro_id_livro = ? AND autor_id_autor = ?";
+    private static final String LISTA_TUDO = "SELECT a.id_autor, a.nome_autor, a.sobrenome_autor, a.data_nascimento, a.breve_biografica, m.nome_municipio FROM autor a inner join municipio m on a.id_municipio = m.id_municipio";
+    private static final String BUSCA_POR_CODIGO = "SELECT * FROM autor_livro, autor, livro WHERE livro_id_livro = id_livro AND id_livro = ? AND autor_id_autor = id_autor AND id_autor = ?";
+    private static final String ELIMINAR = "DELETE FROM autor_livro WHERE livro_id_livro = ? AND autor_id_autor = ?";
+
+    private Connection con;
+
+    public AutorLivroDAO() {
+        con = Conexao.criarConexao();
+    }
 
     @Override
-    public boolean salvar(AutorLivro autorLivro)  throws ClassNotFoundException, SQLException {
+    public boolean salvar(AutorLivro autorLivro) {
+        boolean sucesso = false;
+        PreparedStatement ps = null;
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "INSERT INTO autor_livro(livro_id_livro, autor_id_autor, ano) VALUES (?, ?, ?)";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, autorLivro.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(2, autorLivro.getCodigo().getAutor().getCodigo());
-            prepareStatement.setInt(3, autorLivro.getAno());
-            return prepareStatement.executeUpdate() > 0;
+            ps = con.prepareStatement(INSERIR);
+            ps.setLong(1, autorLivro.getCodigo().getLivro().getCodigo());
+            ps.setLong(2, autorLivro.getCodigo().getAutor().getCodigo());
+            ps.setInt(3, autorLivro.getAno());
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao inserir dados" + ex.getMessage());
         } finally {
-            Conexao.fecharTudo(prepareStatement);
-        }
-    }
-
-    @Override
-    public boolean editar(AutorLivro autorLivro) throws ClassNotFoundException, SQLException {
-        try {//livro_id_livro, autor_id_autor, ano
-            Connection conexao = Conexao.criarConexao();
-            String sql = "UPDATE autor_livro SET ano = ? WHERE livro_id_livro = ? AND autor_id_autor = ?";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setInt(1, autorLivro.getAno());
-            prepareStatement.setLong(2, autorLivro.getCodigo().getLivro().getCodigo());
-            prepareStatement.setLong(3, autorLivro.getCodigo().getAutor().getCodigo());
-            return prepareStatement.executeUpdate() > 0;
-        } finally {
-            Conexao.fecharTudo(prepareStatement);
-        }
-    }
-
-    @Override
-    public boolean excluir(AutorLivro autorLivro) throws ClassNotFoundException, SQLException {
-        return excluir(autorLivro.getCodigo());
-    }
-
-    @Override
-    public boolean excluir(Serializable autorLivro) throws ClassNotFoundException, SQLException {
-        try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "DELETE FROM autor_livro WHERE livro_id_livro = ? AND autor_id_autor = ?";
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(2, ((AutorLivroCodigo)autorLivro).getLivro().getCodigo());
-            prepareStatement.setLong(3, ((AutorLivroCodigo)autorLivro).getAutor().getCodigo());
-            return prepareStatement.executeUpdate() > 0;
-        } finally {
-            Conexao.fecharTudo(prepareStatement);
-        }
-    }
-
-    @Override
-    public AutorLivro buscarPeloCodigo( AutorLivro autorLivro) throws ClassNotFoundException, SQLException {
-        try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT * FROM autor_livro, autor, livro "
-                       + "WHERE livro_id_livro = id_livro AND id_livro = ? AND autor_id_autor = id_autor AND id_autor = ?";
-            
-            prepareStatement = conexao.prepareStatement(sql);
-            prepareStatement.setLong(1, autorLivro.getCodigo().getAutor().getCodigo());
-            prepareStatement.setLong(2, autorLivro.getCodigo().getLivro().getCodigo());
-            
-            resultSet = prepareStatement.executeQuery();
-
-           
-            if (resultSet.next()) {
-                
-                Autor autor = new Autor();
-                autor.setCodigo(resultSet.getLong("livro.id_autor"));
-                autor.setNome(resultSet.getString("livro.nome_autor"));
-                autor.setSobrenome(resultSet.getString("livro.sobrenome_autor"));
-                autor.setDataNascimento(resultSet.getDate("livro.data_nascimento"));
-                autor.setBiografia(resultSet.getString("livro.breve_biografica"));
-                
-                Livro livro = new Livro();
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-
-                autorLivro.setCodigo(new AutorLivroCodigo(autor, livro));
-                autorLivro.setAno(resultSet.getInt("autor_livro.ano"));
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
             }
-            return autorLivro;
-        } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
         }
+        return sucesso;
     }
 
     @Override
-    public List<AutorLivro> buscarTudo() throws ClassNotFoundException, SQLException {
-        return aplicarFiltro(0L, 0L, false);
-    }
-    
-    public List<AutorLivro> filtrar(Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
-        return aplicarFiltro(linhaInicial, totalDeLinhas, true);
-    }
-    
-    private List<AutorLivro> aplicarFiltro(Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+    public boolean editar(AutorLivro autorLivro) {
+        boolean sucesso = false;
+        PreparedStatement ps = null;
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT * FROM autor_livro, autor, livro "
-                       + "WHERE livro_id_livro = id_livro AND autor_id_autor = id_autor ";
-            if (filtroActivo) {
-                sql = sql + " LIMIT ?, ?";
+            ps = con.prepareStatement(ACTUALISAR);
+
+            ps.setInt(1, autorLivro.getAno());
+            ps.setLong(2, autorLivro.getCodigo().getLivro().getCodigo());
+            ps.setLong(3, autorLivro.getCodigo().getAutor().getCodigo());
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao inserir dados" + ex.getMessage());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
             }
+        }
+        return sucesso;
+    }
 
-            prepareStatement = conexao.prepareStatement(sql);
-            if (filtroActivo) {
-                prepareStatement.setLong(1, linhaInicial);
-                prepareStatement.setLong(2, totalDeLinhas);
+    @Override
+    public boolean excluir(AutorLivro autorLivro) {
+        PreparedStatement ps = null;
+        boolean sucesso = false;
+        try {
+            ps = con.prepareStatement(ELIMINAR);
+            ps.setLong(1, autorLivro.getCodigoRegisto());
+            sucesso = ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Erro ao actualizar dados" + ex.getMessage());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
             }
+        }
+        return sucesso;
+    }
 
-            resultSet = prepareStatement.executeQuery();
+    @Override
+    public AutorLivro buscarPeloCodigo(AutorLivro autorLivro) {
 
-            List<AutorLivro> autorLivros = new ArrayList<>();
-            while (resultSet.next()) {
+        PreparedStatement ps = null;
+
+        try {
+            ps = con.prepareStatement(BUSCA_POR_CODIGO);
+            ps.setLong(1, autorLivro.getCodigoRegisto());
+
+            ResultSet rs = ps.executeQuery();
+
+            if (!rs.next()) {
+                return null;
+            }
+            popularComDados(autorLivro, rs);
+
+        } catch (SQLException ex) {
+            System.err.println("Erro ao recuperar dados da editora" + ex.getMessage());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+
+            } catch (SQLException e) {
+                System.err.println("Erro ao desalocar recursos" + e.getMessage());
+            }
+        }
+
+        return autorLivro;
+    }
+
+    @Override
+    public List<AutorLivro> buscarTudo() {
+        List<AutorLivro> autorLivros = new ArrayList<>();
+        try {
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(LISTA_TUDO);
+            while (rs.next()) {
                 AutorLivro autorLivro = new AutorLivro();
-                
-                Autor autor = new Autor();
-                autor.setCodigo(resultSet.getLong("livro.id_autor"));
-                autor.setNome(resultSet.getString("livro.nome_autor"));
-                autor.setSobrenome(resultSet.getString("livro.sobrenome_autor"));
-                autor.setDataNascimento(resultSet.getDate("livro.data_nascimento"));
-                autor.setBiografia(resultSet.getString("livro.breve_biografica"));
-                
-                Livro livro = new Livro();
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-
-                autorLivro.setCodigo(new AutorLivroCodigo(autor, livro));
-                autorLivro.setAno(resultSet.getInt("autor_livro.ano"));
+                popularComDados(autorLivro, rs);
                 autorLivros.add(autorLivro);
+
             }
-            return autorLivros;
-        } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
+            st.close();
+            rs.close();
+        } catch (SQLException ex) {
+            System.err.println("Erro ao recupera dados da Editora" + ex.getMessage());
         }
+
+        return autorLivros;
     }
-    
-    public List<Livro> filtrarLivrosDoAutor(Long codigoAutor, Long linhaInicial, Long totalDeLinhas) throws ClassNotFoundException, SQLException {
-        return aplicarFiltroDosLivrosDoAutor(codigoAutor, linhaInicial, totalDeLinhas, true);
-    }
-    
-    private List<Livro> aplicarFiltroDosLivrosDoAutor(Long codigoAutor, Long linhaInicial, Long totalDeLinhas, boolean filtroActivo) throws ClassNotFoundException, SQLException {
+
+    private void popularComDados(AutorLivro autorLivro, ResultSet resultSet) {
         try {
-            Connection conexao = Conexao.criarConexao();
-            String sql = "SELECT * FROM autor_livro, livro "
-                       + "WHERE livro_id_livro = id_livro AND autor_id_autor = id_autor AND id_autor = ? ";
-            
-            if (filtroActivo) {
-                sql = sql + " LIMIT ?, ?";
-            }
 
-            prepareStatement = conexao.prepareStatement(sql);
-            if (filtroActivo) {
-                prepareStatement.setLong(1, codigoAutor);
-                prepareStatement.setLong(2, linhaInicial);
-                prepareStatement.setLong(3, totalDeLinhas);
-            }
-            resultSet = prepareStatement.executeQuery();
+            Autor autor = new Autor();
+            autor.setCodigo(resultSet.getLong("livro.id_autor"));
+            autor.setNome(resultSet.getString("livro.nome_autor"));
+            autor.setSobrenome(resultSet.getString("livro.sobrenome_autor"));
+            autor.setDataNascimento(resultSet.getDate("livro.data_nascimento"));
+            autor.setBiografia(resultSet.getString("livro.breve_biografica"));
 
-            List<Livro> livros = new ArrayList<>();
-            while (resultSet.next()) {
-                Livro livro = new Livro();
-                livro.setCodigo(resultSet.getLong("livro.id_livro"));
-                livro.setTitulo(resultSet.getString("livro.titulo"));
-                livro.setIsbn(resultSet.getString("livro.isbn"));
-                livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
-                livro.setEdicao(resultSet.getString("livro.edicao"));
-                livro.setResumo(resultSet.getString("livro.resumo"));
-                livro.setSessao(resultSet.getString("livro.sessao"));
-                livro.setEstante(resultSet.getInt("livro.estante"));
-                livro.setPosicao(resultSet.getInt("livro.posicao"));
-                
-                livros.add(livro);
-            }
-            return livros;
-        } finally {
-            Conexao.fecharTudo(prepareStatement, resultSet);
+            Livro livro = new Livro();
+            livro.setCodigo(resultSet.getLong("livro.id_livro"));
+            livro.setTitulo(resultSet.getString("livro.titulo"));
+            livro.setIsbn(resultSet.getString("livro.isbn"));
+            livro.setDataPublicacao(resultSet.getDate("livro.data_publicacao"));
+            livro.setEdicao(resultSet.getString("livro.edicao"));
+            livro.setResumo(resultSet.getString("livro.resumo"));
+            livro.setSessao(resultSet.getString("livro.sessao"));
+            livro.setEstante(resultSet.getInt("livro.estante"));
+            livro.setPosicao(resultSet.getInt("livro.posicao"));
+
+            autorLivro.setCodigo(new AutorLivroCodigo(autor, livro));
+            autorLivro.setAno(resultSet.getInt("autor_livro.ano"));
+        } catch (SQLException ex) {
+            System.err.println("Erro ao ler dados da Editora" + ex.getMessage());
         }
+
     }
+
 }

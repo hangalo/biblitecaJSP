@@ -34,7 +34,7 @@
 
             AutorDAO autorDAO = new AutorDAO();
 
-            List<Autor> autores = autorDAO.listaAutores();
+            List<Autor> autores = autorDAO.buscarTudo();
 
         %>
         <table class=" table table-hover">
